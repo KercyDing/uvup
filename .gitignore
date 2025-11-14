@@ -1,0 +1,29 @@
+# Cargo
+/target
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+**/.DS_Store
+.Spotlight-V100/
+.Trashes/
+
+# Linux
+.nfs*
+
+# IDE
+.idea
+.vscode
+
+# AI
+.claude/
+.cursor/
+.windsurf/
+.copilot/
+
+# Doc except README
+*.md
+!README.md

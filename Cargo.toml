@@ -1,0 +1,50 @@
+[package]
+name = "uvup"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+authors = ["KercyDing"]
+license = "MIT"
+description = "A conda-like environment manager for uv"
+repository = "https://github.com/KercyDing/uvup"
+homepage = "https://github.com/KercyDing/uvup"
+readme = "README.md"
+keywords = ["uv", "python", "virtualenv", "environment", "conda"]
+categories = ["command-line-utilities", "development-tools"]
+
+[dependencies]
+
+[dev-dependencies]
+
+[profile.release]
+strip = true
+lto = "thin"
+opt-level = 3
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+# Fast build profile for development
+[profile.fast-build]
+inherits = "dev"
+opt-level = 1
+debug = 0
+strip = "debuginfo"
+
+[lints.rust]
+unsafe_code = "warn"
+unreachable_pub = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -2 }
+# Allowed pedantic lints
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+# Disallowed restriction lints
+print_stdout = "warn"
+print_stderr = "warn"
+dbg_macro = "warn"
