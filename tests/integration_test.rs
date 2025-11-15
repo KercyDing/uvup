@@ -25,7 +25,19 @@ fn test_init_command() {
     assert!(output.status.success());
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("uvup()"));
+
+    // Check for platform-specific shell hook content
+    #[cfg(target_os = "windows")]
+    {
+        assert!(stdout.contains("function uvup"));
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        assert!(stdout.contains("uvup()"));
+    }
+
+    // Common assertions for all platforms
     assert!(stdout.contains("activate"));
     assert!(stdout.contains("deactivate"));
 }
