@@ -27,3 +27,4 @@ $RECYCLE.BIN/
 # Doc except README
 *.md
 !README.md
+!PULL_REQUEST_TEMPLATE.md
