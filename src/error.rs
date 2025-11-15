@@ -109,7 +109,9 @@ mod tests {
     fn test_result_type() {
         let ok_result: Result<i32> = Ok(42);
         assert!(ok_result.is_ok());
-        assert_eq!(ok_result.unwrap(), 42);
+        if let Ok(value) = ok_result {
+            assert_eq!(value, 42);
+        }
 
         let err_result: Result<i32> = Err(UvupError::UvNotFound);
         assert!(err_result.is_err());
