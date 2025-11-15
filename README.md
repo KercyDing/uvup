@@ -1,5 +1,7 @@
 # uvup
 
+[![DeepWiki](https://img.shields.io/badge/DeepWiki-blue)](https://deepwiki.com/KercyDing/uvup) [![uv](https://img.shields.io/badge/uv-black?logo=github)](https://github.com/astral-sh/uv)
+
 A conda-like environment manager for [uv](https://github.com/astral-sh/uv).
 
 ## Vision
