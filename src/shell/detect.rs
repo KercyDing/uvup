@@ -25,3 +25,35 @@ pub(crate) fn detect_shell() -> Result<ShellType> {
 
     Err(UvupError::ShellDetectionFailed)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_shell_type_equality() {
+        assert_eq!(ShellType::Bash, ShellType::Bash);
+        assert_eq!(ShellType::Zsh, ShellType::Zsh);
+        assert_ne!(ShellType::Bash, ShellType::Zsh);
+    }
+
+    #[test]
+    fn test_detect_shell_current() {
+        let result = detect_shell();
+        assert!(result.is_ok());
+
+        let shell = result.unwrap();
+        #[cfg(not(target_os = "windows"))]
+        {
+            assert!(matches!(
+                shell,
+                ShellType::Bash | ShellType::Zsh | ShellType::Fish
+            ));
+        }
+
+        #[cfg(target_os = "windows")]
+        {
+            assert_eq!(shell, ShellType::PowerShell);
+        }
+    }
+}

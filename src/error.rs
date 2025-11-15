@@ -63,3 +63,55 @@ impl From<io::Error> for UvupError {
 }
 
 pub(crate) type Result<T> = std::result::Result<T, UvupError>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_display() {
+        let err = UvupError::UvNotFound;
+        assert!(err.to_string().contains("'uv' command not found"));
+
+        let err = UvupError::EnvAlreadyExists("test".to_string());
+        assert!(err.to_string().contains("test"));
+        assert!(err.to_string().contains("already exists"));
+
+        let err = UvupError::EnvNotFound("myenv".to_string());
+        assert!(err.to_string().contains("myenv"));
+        assert!(err.to_string().contains("not found"));
+
+        let err = UvupError::InvalidEnvName("bad-name".to_string());
+        assert!(err.to_string().contains("Invalid environment name"));
+
+        let err = UvupError::ShellDetectionFailed;
+        assert!(err.to_string().contains("Could not detect your shell"));
+
+        let err = UvupError::PathError("test error".to_string());
+        assert!(err.to_string().contains("Path Error"));
+
+        let err = UvupError::CommandExecutionFailed("test cmd".to_string());
+        assert!(err.to_string().contains("Command execution failed"));
+    }
+
+    #[test]
+    fn test_io_error_conversion() {
+        let io_err = io::Error::new(io::ErrorKind::NotFound, "file not found");
+        let uvup_err: UvupError = io_err.into();
+
+        match uvup_err {
+            UvupError::IoError(_) => {}
+            _ => panic!("Expected IoError variant"),
+        }
+    }
+
+    #[test]
+    fn test_result_type() {
+        let ok_result: Result<i32> = Ok(42);
+        assert!(ok_result.is_ok());
+        assert_eq!(ok_result.unwrap(), 42);
+
+        let err_result: Result<i32> = Err(UvupError::UvNotFound);
+        assert!(err_result.is_err());
+    }
+}
