@@ -121,6 +121,18 @@ uvup activate myproject
 uv pip install numpy pandas
 ```
 
+## IDE Integration
+
+### VSCode
+
+Add to your `settings.json` to find your venv:
+
+```json
+{
+  "python.venvPath": "~/.uvup"
+}
+```
+
 ## License
 
 [MIT](LICENSE)
