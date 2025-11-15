@@ -7,7 +7,7 @@ pub(crate) fn get_home_dir() -> Result<PathBuf> {
 }
 
 pub(crate) fn get_envs_dir() -> Result<PathBuf> {
-    Ok(get_home_dir()?.join(".uvenvs"))
+    Ok(get_home_dir()?.join(".uvup"))
 }
 
 pub(crate) fn get_env_path(name: &str) -> Result<PathBuf> {

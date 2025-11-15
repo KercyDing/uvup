@@ -9,7 +9,7 @@ function uvup {
             return
         }
 
-        $envPath = "$env:USERPROFILE\.uvenvs\$($Arguments[1])"
+        $envPath = "$env:USERPROFILE\.uvup\$($Arguments[1])"
         $activateScript = "$envPath\Scripts\Activate.ps1"
 
         if (-not (Test-Path $activateScript)) {
