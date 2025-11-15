@@ -19,7 +19,7 @@ pub(crate) enum Commands {
         #[arg(help = "Name of the environment")]
         name: String,
 
-        #[arg(long, help = "Python version (default: 3.12)")]
+        #[arg(long, global = true, help = "Python version (default: 3.12)")]
         python: Option<String>,
     },
 

@@ -88,7 +88,9 @@ cargo build
 uvup create myproject
 
 # Create with specific Python version
-uvup create myproject --python 3.11
+uvup create myproject --python 3.12
+# or
+uvup create --python 3.12 myproject
 
 # List all environments
 uvup list
