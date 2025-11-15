@@ -24,7 +24,9 @@ $RECYCLE.BIN/
 .windsurf/
 .copilot/
 
-# Doc except README
+# Doc except some necessary
 *.md
 !README.md
 !PULL_REQUEST_TEMPLATE.md
+!CHANGELOG.md
+!CONTRIBUTING.md
