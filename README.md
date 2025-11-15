@@ -15,8 +15,6 @@ uvup aims to be a companion tool for uv, providing a familiar conda-like interfa
 
 ## Installation
 
-### Quick Install (Recommended)
-
 **Linux and macOS:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/install.sh | sh
@@ -27,128 +25,24 @@ curl -fsSL https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/install
 Invoke-RestMethod https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/install.ps1 | Invoke-Expression
 ```
 
-The installation script will automatically configure shell integration for you. Restart your terminal or run:
+For detailed installation instructions, manual installation, and developer setup, see [Installation Guide](docs/INSTALL.md).
 
+## Uninstallation
+
+**Linux and macOS:**
 ```bash
-# Linux/macOS
-source ~/.zshrc  # or ~/.bashrc for bash
-
-# Windows (PowerShell)
-. $PROFILE
-```
-
-### Manual Installation
-
-Download the latest release for your platform from [GitHub Releases](https://github.com/KercyDing/uvup/releases):
-
-**Linux:**
-```bash
-# Download and install
-wget https://github.com/KercyDing/uvup/releases/latest/download/uvup-linux-x86_64
-chmod +x uvup-linux-x86_64
-sudo mv uvup-linux-x86_64 /usr/local/bin/uvup
-
-# Initialize shell integration
-echo 'eval "$(uvup init)"' >> ~/.bashrc  # or ~/.zshrc for zsh
-source ~/.bashrc
-```
-
-**macOS:**
-```bash
-# Download and install (Apple Silicon)
-wget https://github.com/KercyDing/uvup/releases/latest/download/uvup-macos-arm64
-chmod +x uvup-macos-arm64
-sudo mv uvup-macos-arm64 /usr/local/bin/uvup
-
-# OR for Intel Macs
-wget https://github.com/KercyDing/uvup/releases/latest/download/uvup-macos-x86_64
-chmod +x uvup-macos-x86_64
-sudo mv uvup-macos-x86_64 /usr/local/bin/uvup
-
-# Initialize shell integration
-echo 'eval "$(uvup init)"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-**Windows:**
-
-1. Download [uvup-windows-x86_64.exe](https://github.com/KercyDing/uvup/releases/latest/download/uvup-windows-x86_64.exe)
-
-2. Create directory and move the binary:
-   ```powershell
-   New-Item -ItemType Directory -Force -Path "$env:LOCALAPPDATA\Programs\uvup"
-   Move-Item uvup-windows-x86_64.exe "$env:LOCALAPPDATA\Programs\uvup\uvup.exe"
-   ```
-
-3. Add to PATH:
-   - Press `Win + R`, type `sysdm.cpl`, press Enter
-   - Go to "Advanced" tab → "Environment Variables"
-   - Under "User variables", select "Path" and click "Edit"
-   - Click "New" and add: `%LOCALAPPDATA%\Programs\uvup`
-   - Click OK to save
-
-4. Initialize shell integration (restart terminal first):
-   ```powershell
-   # Add to profile for all PowerShell hosts
-   Add-Content -Path $PROFILE.CurrentUserAllHosts -Value "`nInvoke-Expression ((uvup init) -join `"``n`")"
-
-   # Load in current session
-   Invoke-Expression ((uvup init) -join "`n")
-   ```
-
-### For Developers
-
-1. Clone the repository:
-```bash
-git clone https://github.com/KercyDing/uvup.git
-cd uvup
-```
-
-2. Install from source:
-```bash
-cargo install --path .
-```
-
-3. Initialize shell integration:
-
-**Linux/macOS:**
-```bash
-# Add to your shell configuration
-echo 'eval "$(uvup init)"' >> ~/.zshrc  # or ~/.bashrc for bash
-source ~/.zshrc
+curl -fsSL -O https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/uninstall.sh
+chmod +x uninstall.sh
+./uninstall.sh
 ```
 
 **Windows (PowerShell):**
 ```powershell
-# Add to profile for all PowerShell hosts
-Add-Content -Path $PROFILE.CurrentUserAllHosts -Value "`nInvoke-Expression ((uvup init) -join `"``n`")"
-
-# Load in current session
-Invoke-Expression ((uvup init) -join "`n")
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/uninstall.ps1 -OutFile uninstall.ps1
+.\uninstall.ps1
 ```
 
-#### Development Workflow
-
-During development, you have several options:
-
-**Option 1: Reinstall after changes (Recommended)**
-```bash
-# After modifying code
-cargo install --path .
-```
-
-**Option 2: Use cargo run for quick testing**
-```bash
-cargo run -- --help
-cargo run -- create test-env
-cargo run -- list
-```
-
-**Option 3: Build and test manually**
-```bash
-cargo build
-./target/debug/uvup --help
-```
+For detailed uninstallation instructions and manual removal, see [Uninstallation Guide](docs/UNINSTALL.md).
 
 ## Planned Features
 
