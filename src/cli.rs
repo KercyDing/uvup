@@ -19,7 +19,7 @@ pub(crate) enum Commands {
         #[arg(help = "Name of the environment")]
         name: String,
 
-        #[arg(long, global = true, help = "Python version (default: 3.12)")]
+        #[arg(short, long, global = true, help = "Python version (default: 3.12)")]
         python: Option<String>,
     },
 
@@ -34,7 +34,7 @@ pub(crate) enum Commands {
 
     #[command(about = "Update uvup to the latest version")]
     Update {
-        #[arg(long, help = "Only check for updates without installing")]
+        #[arg(short, long, help = "Only check for updates without installing")]
         check: bool,
     },
 
@@ -43,7 +43,7 @@ pub(crate) enum Commands {
         #[arg(help = "Source environment name")]
         source: String,
 
-        #[arg(long, help = "Target environment name")]
+        #[arg(short, long, help = "Target environment name")]
         name: String,
     },
 }
