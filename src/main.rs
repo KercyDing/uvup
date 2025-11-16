@@ -27,6 +27,7 @@ fn run() -> Result<()> {
         }
         Commands::List => commands::list::run()?,
         Commands::Remove { name } => commands::remove::run(name)?,
+        Commands::Update { check } => commands::update::run(check)?,
     }
 
     Ok(())

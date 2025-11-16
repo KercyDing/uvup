@@ -31,4 +31,10 @@ pub(crate) enum Commands {
         #[arg(help = "Name of the environment to remove")]
         name: String,
     },
+
+    #[command(about = "Update uvup to the latest version")]
+    Update {
+        #[arg(long, help = "Only check for updates without installing")]
+        check: bool,
+    },
 }

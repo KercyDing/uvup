@@ -11,6 +11,7 @@ pub(crate) enum UvupError {
     IoError(io::Error),
     PathError(String),
     CommandExecutionFailed(String),
+    UpdateFailed(String),
 }
 
 impl fmt::Display for UvupError {
@@ -49,6 +50,9 @@ impl fmt::Display for UvupError {
             }
             UvupError::CommandExecutionFailed(msg) => {
                 write!(f, "Command execution failed: {msg}")
+            }
+            UvupError::UpdateFailed(msg) => {
+                write!(f, "Update failed: {msg}")
             }
         }
     }
@@ -92,6 +96,9 @@ mod tests {
 
         let err = UvupError::CommandExecutionFailed("test cmd".to_string());
         assert!(err.to_string().contains("Command execution failed"));
+
+        let err = UvupError::UpdateFailed("network error".to_string());
+        assert!(err.to_string().contains("Update failed"));
     }
 
     #[test]
