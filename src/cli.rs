@@ -73,5 +73,8 @@ pub(crate) enum Commands {
 
         #[arg(short, long, help = "Copy to .venv in current directory")]
         local: bool,
+
+        #[arg(long, help = "Override existing pyproject.toml (creates backup)")]
+        r#override: bool,
     },
 }

@@ -16,11 +16,6 @@ pub(crate) fn get_env_path(name: &str) -> Result<PathBuf> {
     Ok(get_envs_dir()?.join(name))
 }
 
-/// Get the .venv directory path for an environment (contains the actual venv)
-pub(crate) fn get_venv_path(name: &str) -> Result<PathBuf> {
-    Ok(get_env_path(name)?.join(".venv"))
-}
-
 pub(crate) fn validate_env_name(name: &str) -> Result<()> {
     if name.is_empty() {
         return Err(UvupError::InvalidEnvName(

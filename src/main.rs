@@ -35,6 +35,7 @@ fn run() -> Result<()> {
             exclude,
             include,
             local,
+            r#override,
         } => commands::copy::run(
             source,
             name,
@@ -42,6 +43,7 @@ fn run() -> Result<()> {
             exclude.as_deref(),
             include.as_deref(),
             local,
+            r#override,
         )?,
     }
 
