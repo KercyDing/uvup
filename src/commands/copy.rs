@@ -8,7 +8,7 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 
-pub(crate) fn run(source: String, target: String) -> Result<()> {
+pub(crate) fn run(source: String, target: String, python: Option<&str>) -> Result<()> {
     validate_env_name(&source)?;
     validate_env_name(&target)?;
 
@@ -28,8 +28,12 @@ pub(crate) fn run(source: String, target: String) -> Result<()> {
     println!("Exporting packages from '{source}'...");
     let requirements = export_packages(&source_path)?;
 
-    // Detect Python version from source environment
-    let python_version = get_python_version(&source_path)?;
+    // Determine Python version: use provided version or detect from source
+    let python_version = if let Some(version) = python {
+        version.to_string()
+    } else {
+        get_python_version(&source_path)?
+    };
 
     // Create target environment
     println!("Creating environment '{target}' with Python {python_version}...");

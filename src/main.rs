@@ -28,7 +28,11 @@ fn run() -> Result<()> {
         Commands::List => commands::list::run()?,
         Commands::Remove { name } => commands::remove::run(name)?,
         Commands::Update { check } => commands::update::run(check)?,
-        Commands::Copy { source, name } => commands::copy::run(source, name)?,
+        Commands::Copy {
+            source,
+            name,
+            python,
+        } => commands::copy::run(source, name, python.as_deref())?,
     }
 
     Ok(())

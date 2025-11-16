@@ -38,12 +38,18 @@ pub(crate) enum Commands {
         check: bool,
     },
 
-    #[command(about = "Copy an environment to a new environment")]
+    #[command(
+        about = "Copy an environment to a new environment",
+        override_usage = "uvup copy <SOURCE> [OPTIONS] --name <NAME>"
+    )]
     Copy {
         #[arg(help = "Source environment name")]
         source: String,
 
         #[arg(short, long, help = "Target environment name")]
         name: String,
+
+        #[arg(short, long, help = "Python version for target environment (optional)")]
+        python: Option<String>,
     },
 }
