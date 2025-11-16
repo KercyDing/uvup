@@ -25,6 +25,12 @@ uvup() {
         source "$activate_script"
 
     elif [ "$1" = "deactivate" ]; then
+        if [ -n "$2" ]; then
+            echo "Error: Unknown command 'uvup deactivate $2'"
+            echo "Did you mean: uvup deactivate"
+            return 1
+        fi
+
         if type deactivate > /dev/null 2>&1; then
             deactivate
         else

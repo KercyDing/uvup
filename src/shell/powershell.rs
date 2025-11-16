@@ -25,6 +25,12 @@ function uvup {
         & $activateScript
 
     } elseif ($Arguments[0] -eq "deactivate") {
+        if ($Arguments[1]) {
+            Write-Host "Error: Unknown command 'uvup deactivate $($Arguments[1])'" -ForegroundColor Red
+            Write-Host "Did you mean: uvup deactivate"
+            return
+        }
+
         if (Get-Command deactivate -ErrorAction SilentlyContinue) {
             deactivate
         } else {

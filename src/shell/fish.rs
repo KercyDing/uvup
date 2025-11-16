@@ -23,6 +23,12 @@ function uvup
         source "$activate_script"
 
     else if test "$argv[1]" = "deactivate"
+        if test -n "$argv[2]"
+            echo "Error: Unknown command 'uvup deactivate $argv[2]'"
+            echo "Did you mean: uvup deactivate"
+            return 1
+        end
+
         if functions -q deactivate
             deactivate
         else
