@@ -76,5 +76,8 @@ pub(crate) enum Commands {
 
         #[arg(long, help = "Override existing pyproject.toml (creates backup)")]
         r#override: bool,
+
+        #[arg(long, help = "Preview changes without applying them")]
+        dry_run: bool,
     },
 }

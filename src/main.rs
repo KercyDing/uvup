@@ -36,6 +36,7 @@ fn run() -> Result<()> {
             include,
             local,
             r#override,
+            dry_run,
         } => commands::copy::run(
             source,
             name,
@@ -44,6 +45,7 @@ fn run() -> Result<()> {
             include.as_deref(),
             local,
             r#override,
+            dry_run,
         )?,
     }
 

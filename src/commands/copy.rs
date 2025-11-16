@@ -10,6 +10,7 @@ use std::io::{self, Write};
 use std::process::Command;
 use toml_edit::{DocumentMut, Item, Value};
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn run(
     source: String,
     name: Option<String>,
@@ -18,6 +19,7 @@ pub(crate) fn run(
     include: Option<&[String]>,
     local: bool,
     override_existing: bool,
+    dry_run: bool,
 ) -> Result<()> {
     validate_env_name(&source)?;
 
@@ -30,32 +32,56 @@ pub(crate) fn run(
     let target_config = determine_target_config(name, local, override_existing)?;
     check_target_exists(&target_config)?;
 
+    // Read and process pyproject.toml
+    let source_doc = read_and_parse_toml(&source_path)?;
+    let mut target_doc = source_doc.clone();
+
+    // Apply filters
+    let has_filters = exclude.is_some() || include.is_some();
+    if has_filters {
+        filter_dependencies(&mut target_doc, exclude, include)?;
+    }
+
+    // Get Python versions
+    let source_python = get_python_version_from_toml(&source_doc)?;
+    let target_python = if let Some(version) = python {
+        update_python_version(&mut target_doc, version)?;
+        version.to_string()
+    } else {
+        source_python.clone()
+    };
+
+    // Dry-run mode: preview changes and exit
+    if dry_run {
+        print_dry_run_preview(
+            &source,
+            &target_config,
+            &source_doc,
+            &target_doc,
+            &source_python,
+            &target_python,
+            exclude,
+            include,
+        );
+        return Ok(());
+    }
+
+    // Normal mode: execute copy
     println!(
         "Copying environment '{source}' to '{}'...",
         target_config.name
     );
 
-    // Process pyproject.toml
-    let mut doc = read_and_parse_toml(&source_path)?;
-
-    if exclude.is_some() || include.is_some() {
-        filter_dependencies(&mut doc, exclude, include)?;
-    }
-
-    let python_version = if let Some(version) = python {
+    if python.is_some() {
         println!("Note: Switching Python version may cause package compatibility issues.");
-        update_python_version(&mut doc, version)?;
-        version.to_string()
-    } else {
-        get_python_version_from_toml(&doc)?
-    };
+    }
 
     // Create environment
     println!(
-        "Creating environment '{}' with Python {python_version}...",
+        "Creating environment '{}' with Python {target_python}...",
         target_config.name
     );
-    create_environment(&target_config, &source_path, &doc)?;
+    create_environment(&target_config, &source_path, &target_doc)?;
 
     // Sync packages
     println!("Installing packages...");
@@ -439,4 +465,181 @@ fn update_python_version(doc: &mut DocumentMut, version: &str) -> Result<()> {
     *requires_python = Item::Value(Value::from(format!(">={version}")));
 
     Ok(())
+}
+
+/// Print dry-run preview of changes
+#[allow(clippy::too_many_arguments)]
+fn print_dry_run_preview(
+    source: &str,
+    target_config: &TargetConfig,
+    source_doc: &DocumentMut,
+    target_doc: &DocumentMut,
+    source_python: &str,
+    target_python: &str,
+    exclude: Option<&[String]>,
+    include: Option<&[String]>,
+) {
+    println!("-- Dry Run Mode --");
+    println!();
+    println!("Source:  '{source}' (Python {source_python})");
+    println!("Target:  '{}' (Python {target_python})", target_config.name);
+    if target_config.is_local {
+        println!("Mode:    Local (.venv in current directory)");
+    } else {
+        println!("Mode:    Global environment");
+    }
+    println!();
+
+    // Show Python version change
+    if source_python != target_python {
+        println!("Python version change:");
+        println!("  {source_python} → {target_python}");
+        println!();
+    }
+
+    // Show filter configuration
+    if exclude.is_some() || include.is_some() {
+        println!("Filters applied:");
+        if let Some(exc) = exclude {
+            println!("  Exclude: {}", exc.join(", "));
+        }
+        if let Some(inc) = include {
+            println!("  Include: {}", inc.join(", "));
+        }
+        println!();
+    }
+
+    // Compare dependencies
+    println!("Dependency changes:");
+    compare_dependencies(source_doc, target_doc);
+    println!();
+
+    // Compare optional-dependencies
+    compare_optional_dependencies(source_doc, target_doc);
+
+    println!("To apply these changes, run the same command without --dry-run");
+}
+
+/// Compare and show dependency changes
+fn compare_dependencies(source_doc: &DocumentMut, target_doc: &DocumentMut) {
+    let source_deps = extract_dependencies(source_doc);
+    let target_deps = extract_dependencies(target_doc);
+
+    let mut added = Vec::new();
+    let mut removed = Vec::new();
+    let mut kept = Vec::new();
+
+    for dep in &source_deps {
+        if target_deps.contains(dep) {
+            kept.push(dep);
+        } else {
+            removed.push(dep);
+        }
+    }
+
+    for dep in &target_deps {
+        if !source_deps.contains(dep) {
+            added.push(dep);
+        }
+    }
+
+    if removed.is_empty() && added.is_empty() {
+        println!("  No changes to main dependencies");
+    } else {
+        if !removed.is_empty() {
+            println!("  Removed ({}):", removed.len());
+            for dep in &removed {
+                println!("    - {dep}");
+            }
+        }
+        if !added.is_empty() {
+            println!("  Added ({}):", added.len());
+            for dep in &added {
+                println!("    + {dep}");
+            }
+        }
+        if !kept.is_empty() && (!removed.is_empty() || !added.is_empty()) {
+            println!("  Kept ({}):", kept.len());
+        }
+    }
+}
+
+/// Compare and show optional-dependencies changes
+fn compare_optional_dependencies(source_doc: &DocumentMut, target_doc: &DocumentMut) {
+    let source_optional = extract_optional_dependencies(source_doc);
+    let target_optional = extract_optional_dependencies(target_doc);
+
+    if source_optional.is_empty() && target_optional.is_empty() {
+        return;
+    }
+
+    println!("Optional dependencies:");
+
+    let mut all_groups: std::collections::HashSet<String> = source_optional.keys().cloned().collect();
+    all_groups.extend(target_optional.keys().cloned());
+
+    let mut groups: Vec<_> = all_groups.into_iter().collect();
+    groups.sort();
+
+    for group in groups {
+        let source_deps = source_optional.get(&group);
+        let target_deps = target_optional.get(&group);
+
+        match (source_deps, target_deps) {
+            (Some(src), Some(tgt)) if src == tgt => {
+                println!("  [{group}]: No changes");
+            }
+            (Some(_), Some(tgt)) => {
+                println!("  [{group}]: Modified ({} packages)", tgt.len());
+            }
+            (Some(_), None) => {
+                println!("  [{group}]: Removed (group is empty after filtering)");
+            }
+            (None, Some(tgt)) => {
+                println!("  [{group}]: Added ({} packages)", tgt.len());
+            }
+            (None, None) => unreachable!(),
+        }
+    }
+    println!();
+}
+
+/// Extract main dependencies from pyproject.toml
+fn extract_dependencies(doc: &DocumentMut) -> Vec<String> {
+    doc.get("project")
+        .and_then(|p| p.get("dependencies"))
+        .and_then(|d| d.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str())
+                .map(String::from)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// Extract optional-dependencies from pyproject.toml
+fn extract_optional_dependencies(
+    doc: &DocumentMut,
+) -> std::collections::HashMap<String, Vec<String>> {
+    let mut result = std::collections::HashMap::new();
+
+    if let Some(project) = doc.get("project") {
+        if let Some(optional) = project.get("optional-dependencies") {
+            if let Some(table) = optional.as_table() {
+                for (key, value) in table {
+                    if let Some(arr) = value.as_array() {
+                        let deps: Vec<String> = arr
+                            .iter()
+                            .filter_map(|v| v.as_str())
+                            .map(String::from)
+                            .collect();
+                        result.insert(key.to_string(), deps);
+                    }
+                }
+            }
+        }
+    }
+
+    result
 }
