@@ -1,7 +1,7 @@
 // Allow println! in this module as it's used for user-facing output
 #![allow(clippy::print_stdout)]
 
-use crate::env::paths::{get_env_path, get_envs_dir, validate_env_name};
+use crate::env::paths::{get_env_path, get_envs_dir, get_venv_path, validate_env_name};
 use crate::error::{Result, UvupError};
 use crate::utils::print_success;
 use std::env;
@@ -21,7 +21,7 @@ pub(crate) fn run(
     validate_env_name(&source)?;
 
     // Determine target path and name
-    let (target_name, target_path) = if local {
+    let (target_name, target_path, is_local) = if local {
         let current_dir = env::current_dir()
             .map_err(|e| UvupError::PathError(format!("Failed to get current directory: {e}")))?;
         let venv_path = current_dir.join(".venv");
@@ -41,13 +41,13 @@ pub(crate) fn run(
             return Ok(());
         }
 
-        (".venv".to_string(), venv_path)
+        (".venv".to_string(), venv_path, true)
     } else {
         let target = name
             .ok_or_else(|| UvupError::InvalidInput("Must provide --name or --local".to_string()))?;
         validate_env_name(&target)?;
         let path = get_env_path(&target)?;
-        (target, path)
+        (target, path, false)
     };
 
     let source_path = get_env_path(&source)?;
@@ -63,7 +63,8 @@ pub(crate) fn run(
 
     // Export packages from source environment
     println!("Exporting packages from '{source}'...");
-    let mut requirements = export_packages(&source_path)?;
+    let source_venv_path = get_venv_path(&source)?;
+    let mut requirements = export_packages(&source_venv_path)?;
 
     // Apply filters if specified
     if exclude.is_some() || include.is_some() {
@@ -76,15 +77,15 @@ pub(crate) fn run(
         println!("      Using 'uv pip install' to automatically resolve compatible versions.");
         version.to_string()
     } else {
-        get_python_version(&source_path)?
+        get_python_version(&source_venv_path)?
     };
 
     // Create target environment
     println!("Creating environment '{target_name}' with Python {python_version}...");
-    if local {
-        create_project_environment(&target_path, &python_version)?;
+    if is_local {
+        create_local_environment(&target_path, &python_version)?;
     } else {
-        create_environment(&target_name, &python_version)?;
+        create_project_environment(&target_path, &python_version)?;
     }
 
     // Sync packages to target environment
@@ -93,8 +94,13 @@ pub(crate) fn run(
         print_success(&format!("Created empty environment '{target_name}'"));
     } else {
         println!("Installing packages...");
-        let use_sync = python.is_none(); // Use sync only when no Python version specified
-        sync_packages(&target_path, &requirements, use_sync)?;
+        let target_venv_path = if is_local {
+            target_path.clone()
+        } else {
+            target_path.join(".venv")
+        };
+        let use_sync = python.is_none();
+        sync_packages(&target_venv_path, &requirements, use_sync)?;
         print_success(&format!(
             "Successfully copied environment '{source}' to '{target_name}'"
         ));
@@ -104,11 +110,11 @@ pub(crate) fn run(
 }
 
 /// Export packages from an environment using uv pip freeze
-fn export_packages(env_path: &Path) -> Result<String> {
+fn export_packages(venv_path: &Path) -> Result<String> {
     let python_bin = if cfg!(windows) {
-        env_path.join("Scripts").join("python.exe")
+        venv_path.join("Scripts").join("python.exe")
     } else {
-        env_path.join("bin").join("python")
+        venv_path.join("bin").join("python")
     };
 
     let output = Command::new("uv")
@@ -133,8 +139,8 @@ fn export_packages(env_path: &Path) -> Result<String> {
 }
 
 /// Get Python version from pyvenv.cfg
-fn get_python_version(env_path: &Path) -> Result<String> {
-    let cfg_path = env_path.join("pyvenv.cfg");
+fn get_python_version(venv_path: &Path) -> Result<String> {
+    let cfg_path = venv_path.join("pyvenv.cfg");
     let cfg_content = fs::read_to_string(&cfg_path)
         .map_err(|e| UvupError::PathError(format!("Failed to read pyvenv.cfg: {e}")))?;
 
@@ -152,31 +158,52 @@ fn get_python_version(env_path: &Path) -> Result<String> {
     Ok("3.12".to_string())
 }
 
-/// Create a new environment using uv venv
-fn create_environment(name: &str, python_version: &str) -> Result<()> {
-    let env_path = get_env_path(name)?;
+/// Create a new project environment using uv init + uv venv
+fn create_project_environment(project_path: &Path, python_version: &str) -> Result<()> {
     let envs_dir = get_envs_dir()?;
     fs::create_dir_all(&envs_dir)?;
+    fs::create_dir_all(project_path)?;
 
-    let status = Command::new("uv")
-        .arg("venv")
-        .arg(&env_path)
+    // Initialize uv project
+    let init_status = Command::new("uv")
+        .arg("init")
+        .arg("--no-readme")
         .arg("--python")
         .arg(python_version)
+        .current_dir(project_path)
         .status()
-        .map_err(|e| UvupError::CommandExecutionFailed(format!("Failed to execute uv: {e}")))?;
+        .map_err(|e| {
+            UvupError::CommandExecutionFailed(format!("Failed to execute uv init: {e}"))
+        })?;
 
-    if !status.success() {
-        return Err(UvupError::CommandExecutionFailed(format!(
-            "Failed to create environment '{name}'"
-        )));
+    if !init_status.success() {
+        let _ = fs::remove_dir_all(project_path);
+        return Err(UvupError::CommandExecutionFailed(
+            "Failed to initialize project".to_string(),
+        ));
+    }
+
+    // Create virtual environment
+    let venv_status = Command::new("uv")
+        .arg("venv")
+        .current_dir(project_path)
+        .status()
+        .map_err(|e| {
+            UvupError::CommandExecutionFailed(format!("Failed to execute uv venv: {e}"))
+        })?;
+
+    if !venv_status.success() {
+        let _ = fs::remove_dir_all(project_path);
+        return Err(UvupError::CommandExecutionFailed(
+            "Failed to create virtual environment".to_string(),
+        ));
     }
 
     Ok(())
 }
 
-/// Create a project .venv environment using uv venv
-fn create_project_environment(venv_path: &PathBuf, python_version: &str) -> Result<()> {
+/// Create a local .venv environment using uv venv
+fn create_local_environment(venv_path: &PathBuf, python_version: &str) -> Result<()> {
     let status = Command::new("uv")
         .arg("venv")
         .arg(venv_path)
@@ -187,7 +214,7 @@ fn create_project_environment(venv_path: &PathBuf, python_version: &str) -> Resu
 
     if !status.success() {
         return Err(UvupError::CommandExecutionFailed(
-            "Failed to create project environment".to_string(),
+            "Failed to create local environment".to_string(),
         ));
     }
 
@@ -247,7 +274,7 @@ fn filter_packages(
 }
 
 /// Sync packages to target environment using uv pip sync or install
-fn sync_packages(env_path: &Path, requirements: &str, use_sync: bool) -> Result<()> {
+fn sync_packages(venv_path: &Path, requirements: &str, use_sync: bool) -> Result<()> {
     // Create temporary requirements file
     let temp_file = tempfile::NamedTempFile::new().map_err(|e| {
         UvupError::CommandExecutionFailed(format!("Failed to create temp file: {e}"))
@@ -258,9 +285,9 @@ fn sync_packages(env_path: &Path, requirements: &str, use_sync: bool) -> Result<
     })?;
 
     let python_bin = if cfg!(windows) {
-        env_path.join("Scripts").join("python.exe")
+        venv_path.join("Scripts").join("python.exe")
     } else {
-        env_path.join("bin").join("python")
+        venv_path.join("bin").join("python")
     };
 
     let status = if use_sync {
