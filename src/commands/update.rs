@@ -60,17 +60,14 @@ pub(crate) fn run(check_only: bool) -> Result<()> {
 
 /// Fetch the latest version from GitHub releases
 fn fetch_latest_version() -> Result<String> {
-    let client = ureq::AgentBuilder::new()
-        .user_agent(&format!("uvup/{CURRENT_VERSION}"))
-        .build();
-
-    let response = client
-        .get(GITHUB_API_RELEASES)
+    let mut response = ureq::get(GITHUB_API_RELEASES)
+        .header("User-Agent", &format!("uvup/{CURRENT_VERSION}"))
         .call()
         .map_err(|e| UvupError::UpdateFailed(format!("Failed to fetch release info: {e}")))?;
 
     let json: serde_json::Value = response
-        .into_json()
+        .body_mut()
+        .read_json()
         .map_err(|e| UvupError::UpdateFailed(format!("Failed to parse release info: {e}")))?;
 
     let tag_name = json["tag_name"]
@@ -109,18 +106,15 @@ fn get_download_url(version: &str) -> Result<String> {
 
 /// Download the binary from the given URL
 fn download_binary(url: &str) -> Result<Vec<u8>> {
-    let client = ureq::AgentBuilder::new()
-        .user_agent(&format!("uvup/{CURRENT_VERSION}"))
-        .build();
-
-    let response = client
-        .get(url)
+    let mut response = ureq::get(url)
+        .header("User-Agent", &format!("uvup/{CURRENT_VERSION}"))
         .call()
         .map_err(|e| UvupError::UpdateFailed(format!("Failed to download update: {e}")))?;
 
     let mut data = Vec::new();
     response
-        .into_reader()
+        .body_mut()
+        .as_reader()
         .read_to_end(&mut data)
         .map_err(|e| UvupError::UpdateFailed(format!("Failed to read download: {e}")))?;
 

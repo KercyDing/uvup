@@ -37,4 +37,13 @@ pub(crate) enum Commands {
         #[arg(long, help = "Only check for updates without installing")]
         check: bool,
     },
+
+    #[command(about = "Copy an environment to a new environment")]
+    Copy {
+        #[arg(help = "Source environment name")]
+        source: String,
+
+        #[arg(long, help = "Target environment name")]
+        name: String,
+    },
 }
