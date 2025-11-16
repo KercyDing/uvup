@@ -73,6 +73,32 @@ pub(crate) enum Commands {
         dry_run: bool,
     },
 
+    #[command(about = "Sync current project with a template")]
+    Sync {
+        #[arg(long, help = "Template environment name")]
+        template: String,
+
+        #[arg(short, long, help = "Python version (override current version)")]
+        python: Option<String>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Exclude packages (comma-separated)"
+        )]
+        exclude: Option<Vec<String>>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Include only these packages (comma-separated)"
+        )]
+        include: Option<Vec<String>>,
+
+        #[arg(long, help = "Preview changes without syncing")]
+        dry_run: bool,
+    },
+
     #[command(about = "Update uvup to the latest version")]
     Update {
         #[arg(short, long, help = "Only check for updates without installing")]

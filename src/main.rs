@@ -45,6 +45,19 @@ fn run() -> Result<()> {
             path.as_deref(),
             dry_run,
         )?,
+        Commands::Sync {
+            template,
+            python,
+            exclude,
+            include,
+            dry_run,
+        } => commands::sync::run(
+            template,
+            python.as_deref(),
+            exclude.as_deref(),
+            include.as_deref(),
+            dry_run,
+        )?,
         Commands::Update { check } => commands::update::run(check)?,
     }
 
