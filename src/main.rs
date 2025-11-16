@@ -32,7 +32,17 @@ fn run() -> Result<()> {
             source,
             name,
             python,
-        } => commands::copy::run(source, name, python.as_deref())?,
+            exclude,
+            include,
+            local,
+        } => commands::copy::run(
+            source,
+            name,
+            python.as_deref(),
+            exclude.as_deref(),
+            include.as_deref(),
+            local,
+        )?,
     }
 
     Ok(())

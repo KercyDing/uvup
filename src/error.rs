@@ -7,6 +7,7 @@ pub(crate) enum UvupError {
     EnvAlreadyExists(String),
     EnvNotFound(String),
     InvalidEnvName(String),
+    InvalidInput(String),
     ShellDetectionFailed,
     IoError(io::Error),
     PathError(String),
@@ -37,6 +38,9 @@ impl fmt::Display for UvupError {
                     f,
                     "Environment names must contain only alphanumeric characters, hyphens, and underscores"
                 )
+            }
+            UvupError::InvalidInput(msg) => {
+                write!(f, "Error: {msg}")
             }
             UvupError::ShellDetectionFailed => {
                 writeln!(f, "Error: Could not detect your shell")?;

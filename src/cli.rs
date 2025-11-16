@@ -46,10 +46,32 @@ pub(crate) enum Commands {
         #[arg(help = "Source environment name")]
         source: String,
 
-        #[arg(short, long, help = "Target environment name")]
-        name: String,
+        #[arg(
+            short,
+            long,
+            help = "Target environment name (or use --local)",
+            conflicts_with = "local"
+        )]
+        name: Option<String>,
 
         #[arg(short, long, help = "Python version for target environment (optional)")]
         python: Option<String>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Exclude packages (comma-separated)"
+        )]
+        exclude: Option<Vec<String>>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Include only these packages (comma-separated)"
+        )]
+        include: Option<Vec<String>>,
+
+        #[arg(short, long, help = "Copy to .venv in current directory")]
+        local: bool,
     },
 }
