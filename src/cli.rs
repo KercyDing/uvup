@@ -32,29 +32,24 @@ pub(crate) enum Commands {
         name: String,
     },
 
-    #[command(about = "Update uvup to the latest version")]
-    Update {
-        #[arg(short, long, help = "Only check for updates without installing")]
-        check: bool,
-    },
-
-    #[command(
-        about = "Copy an environment to a new environment",
-        override_usage = "uvup copy <SOURCE> [OPTIONS] --name <NAME>"
-    )]
-    Copy {
+    #[command(about = "Clone an environment (exact 1:1 copy)")]
+    Clone {
         #[arg(help = "Source environment name")]
         source: String,
 
-        #[arg(
-            short,
-            long,
-            help = "Target environment name (or use --local)",
-            conflicts_with = "local"
-        )]
-        name: Option<String>,
+        #[arg(help = "Target environment name")]
+        target: String,
+    },
 
-        #[arg(short, long, help = "Python version for target environment (optional)")]
+    #[command(about = "Create a new project from a template")]
+    New {
+        #[arg(help = "Project name")]
+        name: String,
+
+        #[arg(long, help = "Template environment name")]
+        template: String,
+
+        #[arg(short, long, help = "Python version (override template version)")]
         python: Option<String>,
 
         #[arg(
@@ -71,13 +66,16 @@ pub(crate) enum Commands {
         )]
         include: Option<Vec<String>>,
 
-        #[arg(short, long, help = "Copy to .venv in current directory")]
-        local: bool,
+        #[arg(long, help = "Directory to create project in (default: current dir)")]
+        path: Option<String>,
 
-        #[arg(long, help = "Override existing pyproject.toml (creates backup)")]
-        r#override: bool,
-
-        #[arg(long, help = "Preview changes without applying them")]
+        #[arg(long, help = "Preview changes without creating")]
         dry_run: bool,
+    },
+
+    #[command(about = "Update uvup to the latest version")]
+    Update {
+        #[arg(short, long, help = "Only check for updates without installing")]
+        check: bool,
     },
 }
