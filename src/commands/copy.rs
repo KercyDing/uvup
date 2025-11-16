@@ -72,6 +72,8 @@ pub(crate) fn run(
 
     // Determine Python version: use provided version or detect from source
     let python_version = if let Some(version) = python {
+        println!("Note: Switching Python version may cause package compatibility issues.");
+        println!("      Using 'uv pip install' to automatically resolve compatible versions.");
         version.to_string()
     } else {
         get_python_version(&source_path)?
@@ -91,7 +93,8 @@ pub(crate) fn run(
         print_success(&format!("Created empty environment '{target_name}'"));
     } else {
         println!("Installing packages...");
-        sync_packages(&target_path, &requirements)?;
+        let use_sync = python.is_none(); // Use sync only when no Python version specified
+        sync_packages(&target_path, &requirements, use_sync)?;
         print_success(&format!(
             "Successfully copied environment '{source}' to '{target_name}'"
         ));
@@ -243,8 +246,8 @@ fn filter_packages(
     filtered.join("\n")
 }
 
-/// Sync packages to target environment using uv pip sync
-fn sync_packages(env_path: &Path, requirements: &str) -> Result<()> {
+/// Sync packages to target environment using uv pip sync or install
+fn sync_packages(env_path: &Path, requirements: &str, use_sync: bool) -> Result<()> {
     // Create temporary requirements file
     let temp_file = tempfile::NamedTempFile::new().map_err(|e| {
         UvupError::CommandExecutionFailed(format!("Failed to create temp file: {e}"))
@@ -260,17 +263,32 @@ fn sync_packages(env_path: &Path, requirements: &str) -> Result<()> {
         env_path.join("bin").join("python")
     };
 
-    // Use uv pip sync for precise environment reproduction
-    let status = Command::new("uv")
-        .arg("pip")
-        .arg("sync")
-        .arg("--python")
-        .arg(&python_bin)
-        .arg(temp_file.path())
-        .status()
-        .map_err(|e| {
-            UvupError::CommandExecutionFailed(format!("Failed to execute uv pip sync: {e}"))
-        })?;
+    let status = if use_sync {
+        // Use pip sync for exact version replication (same Python version)
+        Command::new("uv")
+            .arg("pip")
+            .arg("sync")
+            .arg("--python")
+            .arg(&python_bin)
+            .arg(temp_file.path())
+            .status()
+            .map_err(|e| {
+                UvupError::CommandExecutionFailed(format!("Failed to execute uv pip sync: {e}"))
+            })?
+    } else {
+        // Use pip install for cross-version compatibility (different Python version)
+        Command::new("uv")
+            .arg("pip")
+            .arg("install")
+            .arg("--python")
+            .arg(&python_bin)
+            .arg("-r")
+            .arg(temp_file.path())
+            .status()
+            .map_err(|e| {
+                UvupError::CommandExecutionFailed(format!("Failed to execute uv pip install: {e}"))
+            })?
+    };
 
     if !status.success() {
         return Err(UvupError::CommandExecutionFailed(
