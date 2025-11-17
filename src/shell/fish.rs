@@ -21,6 +21,7 @@ function uvup
         end
 
         source "$activate_script"
+        set -gx UVUP_ACTIVE_ENV "$argv[2]"
 
     else if test "$argv[1]" = "deactivate"
         if test -n "$argv[2]"
@@ -31,6 +32,7 @@ function uvup
 
         if functions -q deactivate
             deactivate
+            set -e UVUP_ACTIVE_ENV
         else
             echo "Error: No active environment"
             return 1

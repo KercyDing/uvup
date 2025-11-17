@@ -23,6 +23,7 @@ function uvup {
         }
 
         & $activateScript
+        $env:UVUP_ACTIVE_ENV = $Arguments[1]
 
     } elseif ($Arguments[0] -eq "deactivate") {
         if ($Arguments[1]) {
@@ -33,6 +34,7 @@ function uvup {
 
         if (Get-Command deactivate -ErrorAction SilentlyContinue) {
             deactivate
+            Remove-Item Env:\UVUP_ACTIVE_ENV -ErrorAction SilentlyContinue
         } else {
             Write-Host "Error: No active environment" -ForegroundColor Red
         }

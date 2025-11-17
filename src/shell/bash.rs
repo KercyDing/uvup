@@ -23,6 +23,7 @@ uvup() {
         fi
 
         source "$activate_script"
+        export UVUP_ACTIVE_ENV="$2"
 
     elif [ "$1" = "deactivate" ]; then
         if [ -n "$2" ]; then
@@ -33,6 +34,7 @@ uvup() {
 
         if type deactivate > /dev/null 2>&1; then
             deactivate
+            unset UVUP_ACTIVE_ENV
         else
             echo "Error: No active environment"
             return 1
