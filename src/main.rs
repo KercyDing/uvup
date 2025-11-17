@@ -59,8 +59,8 @@ fn run() -> Result<()> {
             dry_run,
         )?,
         Commands::Update { check } => commands::update::run(check)?,
-        Commands::Add { packages, group } => commands::add::run(packages, group)?,
-        Commands::Remove { packages, group } => commands::remove::run(packages, group)?,
+        Commands::Add { packages, group } => commands::add::run(&packages, group)?,
+        Commands::Remove { packages, group } => commands::remove::run(&packages, group)?,
         Commands::Lock { upgrade } => commands::lock::run(upgrade)?,
         Commands::Tree { depth } => commands::tree::run(depth)?,
     }

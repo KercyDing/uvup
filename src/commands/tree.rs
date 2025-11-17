@@ -1,11 +1,10 @@
-use crate::error::{Result, UvupError};
 use crate::env::paths::get_env_path;
+use crate::error::{Result, UvupError};
 use std::env;
 use std::process::Command;
 
 pub(crate) fn run(depth: Option<usize>) -> Result<()> {
-    let active_env = env::var("UVUP_ACTIVE_ENV")
-        .map_err(|_| UvupError::NoActiveEnvironment)?;
+    let active_env = env::var("UVUP_ACTIVE_ENV").map_err(|_| UvupError::NoActiveEnvironment)?;
 
     let env_path = get_env_path(&active_env)?;
 

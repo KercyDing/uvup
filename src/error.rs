@@ -57,7 +57,10 @@ impl fmt::Display for UvupError {
             }
             UvupError::NoActiveEnvironment => {
                 writeln!(f, "Error: No active environment")?;
-                write!(f, "Tip: Use 'uvup activate <name>' to activate an environment first")
+                write!(
+                    f,
+                    "Tip: Use 'uvup activate <name>' to activate an environment first"
+                )
             }
         }
     }

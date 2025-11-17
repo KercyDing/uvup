@@ -187,7 +187,7 @@ fn test_list_empty_environments() {
 // They are marked as ignored by default and can be run with: cargo test -- --ignored
 
 #[test]
-#[ignore]
+#[ignore = "requires shell integration to set UVUP_ACTIVE_ENV"]
 fn test_add_package_without_activation() {
     let add_output = Command::new("cargo")
         .args(["run", "--", "add", "requests"])
@@ -200,7 +200,7 @@ fn test_add_package_without_activation() {
 }
 
 #[test]
-#[ignore]
+#[ignore = "requires shell integration to set UVUP_ACTIVE_ENV"]
 fn test_remove_package_without_activation() {
     let remove_output = Command::new("cargo")
         .args(["run", "--", "remove", "requests"])
@@ -213,7 +213,7 @@ fn test_remove_package_without_activation() {
 }
 
 #[test]
-#[ignore]
+#[ignore = "requires shell integration to set UVUP_ACTIVE_ENV"]
 fn test_lock_without_activation() {
     let lock_output = Command::new("cargo")
         .args(["run", "--", "lock"])
@@ -226,7 +226,7 @@ fn test_lock_without_activation() {
 }
 
 #[test]
-#[ignore]
+#[ignore = "requires shell integration to set UVUP_ACTIVE_ENV"]
 fn test_tree_without_activation() {
     let tree_output = Command::new("cargo")
         .args(["run", "--", "tree"])

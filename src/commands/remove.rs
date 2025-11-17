@@ -1,11 +1,10 @@
-use crate::error::{Result, UvupError};
 use crate::env::paths::get_env_path;
+use crate::error::{Result, UvupError};
 use std::env;
 use std::process::Command;
 
-pub(crate) fn run(packages: Vec<String>, group: Option<String>) -> Result<()> {
-    let active_env = env::var("UVUP_ACTIVE_ENV")
-        .map_err(|_| UvupError::NoActiveEnvironment)?;
+pub(crate) fn run(packages: &[String], group: Option<String>) -> Result<()> {
+    let active_env = env::var("UVUP_ACTIVE_ENV").map_err(|_| UvupError::NoActiveEnvironment)?;
 
     let env_path = get_env_path(&active_env)?;
 
@@ -20,7 +19,7 @@ pub(crate) fn run(packages: Vec<String>, group: Option<String>) -> Result<()> {
         cmd.arg("--group").arg(g);
     }
 
-    cmd.args(&packages);
+    cmd.args(packages);
 
     let status = cmd.status().map_err(|e| {
         UvupError::CommandExecutionFailed(format!("Failed to execute uv remove: {e}"))
