@@ -10,6 +10,7 @@ pub(crate) fn get_envs_dir() -> Result<PathBuf> {
     Ok(get_home_dir()?.join(".uvup"))
 }
 
+/// Get the project directory path for an environment (contains pyproject.toml)
 pub(crate) fn get_env_path(name: &str) -> Result<PathBuf> {
     validate_env_name(name)?;
     Ok(get_envs_dir()?.join(name))

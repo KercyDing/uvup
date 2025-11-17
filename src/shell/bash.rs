@@ -7,7 +7,7 @@ uvup() {
             return 1
         fi
 
-        local env_path="$HOME/.uvup/$2"
+        local env_path="$HOME/.uvup/$2/.venv"
         local activate_script="$env_path/bin/activate"
 
         if [ ! -f "$activate_script" ]; then

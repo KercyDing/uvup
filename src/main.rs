@@ -27,8 +27,38 @@ fn run() -> Result<()> {
         }
         Commands::List => commands::list::run()?,
         Commands::Remove { name } => commands::remove::run(name)?,
+        Commands::Clone { source, target } => commands::clone::run(source, target)?,
+        Commands::New {
+            name,
+            template,
+            python,
+            exclude,
+            include,
+            path,
+            dry_run,
+        } => commands::new::run(
+            &name,
+            template,
+            python.as_deref(),
+            exclude.as_deref(),
+            include.as_deref(),
+            path.as_deref(),
+            dry_run,
+        )?,
+        Commands::Sync {
+            template,
+            python,
+            exclude,
+            include,
+            dry_run,
+        } => commands::sync::run(
+            template,
+            python.as_deref(),
+            exclude.as_deref(),
+            include.as_deref(),
+            dry_run,
+        )?,
         Commands::Update { check } => commands::update::run(check)?,
-        Commands::Copy { source, name } => commands::copy::run(source, name)?,
     }
 
     Ok(())

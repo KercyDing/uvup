@@ -10,10 +10,10 @@ uvup aims to be a companion tool for uv, providing a familiar conda-like interfa
 
 ## Core Philosophy
 
-- **Enhancement, not replacement**: uvup calls uv for actual work
-- **User experience first**: Familiar commands and seamless activation
-- **Best practices**: Following proven patterns from conda and rustup
-- **Lightweight and cross-platform**: Single binary, works everywhere
+- **Enhancement, not replacement**: Calls uv for actual work
+- **Familiar interface**: Conda-like commands, seamless activation
+- **Single binary**: Lightweight and cross-platform
+- **Template-driven**: Reusable project configurations
 
 ## Installation
 
@@ -48,20 +48,23 @@ For detailed uninstallation instructions and manual removal, see [Uninstallation
 
 ## Planned Features
 
-### MVP (v0.1.0) - Completed
+### v0.2.0 - Completed
 
-- [x] `uvup init` - Shell integration (Bash, Zsh, Fish, PowerShell)
-- [x] `uvup create <name>` - Create environments
-- [x] `uvup activate <name>` - Activate environments (via shell hook)
-- [x] `uvup list` - List all environments
-- [x] `uvup remove <name>` - Remove environments
+- [x] `uvup clone <source> <target>` - Clone environments (1:1 exact copy)
+- [x] `uvup new <name> --template <template>` - Create projects from templates
+- [x] `uvup sync --template <template>` - Sync current project with template
+- [x] Template modification support (--python, --exclude, --include)
+- [x] Dry-run preview mode for all template operations
+- [x] pyproject.toml-based dependency management
+- [x] optional-dependencies support
 
 ### Future Versions
 
-- `uvup default <name>` - Set default environment (auto-activate on new terminal)
-- `uvup undefault` - Remove default environment
-- Installation via package managers (Homebrew, Scoop, Winget)
-- Enhanced `list` command with more environment details
+- Official template repository with curated project templates
+- `uvup template list` - Browse available official templates
+- Auto-download templates on first use
+- `uvup default <name>` - Set default environment
+- Package manager support (Homebrew, Scoop, Winget)
 
 ## Usage
 
@@ -73,8 +76,6 @@ uvup create myproject
 
 # Create with specific Python version
 uvup create myproject --python 3.12
-# or
-uvup create --python 3.12 myproject
 
 # List all environments
 uvup list
@@ -83,7 +84,7 @@ uvup list
 uvup activate myproject
 
 # Install packages (using uv)
-uv pip install numpy pandas
+uv add numpy pandas
 
 # Deactivate
 uvup deactivate
@@ -92,9 +93,113 @@ uvup deactivate
 uvup remove myproject
 ```
 
+### Environment Cloning
+
+Clone an existing environment to create an exact 1:1 copy:
+
+```bash
+# Clone an environment
+uvup clone myproject myproject-backup
+
+# The cloned environment will have identical:
+# - Python version
+# - All dependencies (from pyproject.toml)
+# - Lock file (uv.lock)
+```
+
+### Template-based Project Creation
+
+Create new projects from template environments with modification support:
+
+```bash
+# Preview changes before creating
+uvup new myapp --template web-template --dry-run
+
+# Create a project from a template
+uvup new myapp --template web-template
+
+# Create with custom Python version
+uvup new myapp --template web-template --python 3.11
+
+# Create with package filtering
+uvup new myapp --template web-template --exclude pytest,black
+uvup new myapp --template web-template --include numpy,pandas,requests
+
+# Create in a custom directory
+uvup new myapp --template web-template --path ~/projects
+```
+
+### Template Synchronization
+
+Sync an existing project with a template environment:
+
+```bash
+# Preview changes before syncing
+uvup sync --template web-template --dry-run
+
+# Sync current project with template
+cd myproject
+uvup sync --template web-template
+
+# Sync with Python version override
+uvup sync --template web-template --python 3.11
+
+# Sync with package filtering
+uvup sync --template web-template --exclude dev-packages
+uvup sync --template web-template --include numpy,pandas
+```
+
+### Command Categories
+
+uvup provides four distinct command categories:
+
+1. **Create** - Create empty environments
+   ```bash
+   uvup create myenv --python 3.12
+   ```
+
+2. **Clone** - 1:1 exact copy (no modifications)
+   ```bash
+   uvup clone source-env target-env
+   ```
+
+3. **New** - Create projects from templates (with modifications)
+   ```bash
+   uvup new myproject --template base-template --exclude pytest
+   ```
+
+4. **Sync** - Update current project from template (with modifications)
+   ```bash
+   uvup sync --template base-template --python 3.11
+   ```
+
+For complete command reference with all options and examples, see [COMMANDS.md](docs/COMMANDS.md).
+
+## Documentation
+
+### Quick Help
+
+Use the built-in help system for command-specific usage:
+
+```bash
+# General help
+uvup --help
+
+# Command-specific help
+uvup new --help
+uvup sync --help
+uvup clone --help
+```
+
+### Complete Documentation
+
+- **[COMMANDS.md](docs/COMMANDS.md)** - Complete command reference with all options and examples
+- **[USE_CASES.md](docs/USE_CASES.md)** - Real-world usage scenarios and workflows
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+
 ## Scope
 
-uvup focuses on **environment management only**. For package management, use uv directly:
+uvup focuses on **environment management and template-based workflows**. For package management, use uv directly:
 
 ```bash
 # Environment management with uvup
@@ -102,7 +207,10 @@ uvup create myproject
 uvup activate myproject
 
 # Package management with uv
-uv pip install numpy pandas
+uv add numpy pandas
+uv remove pandas
+uv lock
+uv sync
 ```
 
 ## IDE Integration

@@ -32,18 +32,76 @@ pub(crate) enum Commands {
         name: String,
     },
 
+    #[command(about = "Clone an environment (exact 1:1 copy)")]
+    Clone {
+        #[arg(help = "Source environment name")]
+        source: String,
+
+        #[arg(help = "Target environment name")]
+        target: String,
+    },
+
+    #[command(about = "Create a new project from a template")]
+    New {
+        #[arg(help = "Project name")]
+        name: String,
+
+        #[arg(long, help = "Template environment name")]
+        template: String,
+
+        #[arg(short, long, help = "Python version (override template version)")]
+        python: Option<String>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Exclude packages (comma-separated)"
+        )]
+        exclude: Option<Vec<String>>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Include only these packages (comma-separated)"
+        )]
+        include: Option<Vec<String>>,
+
+        #[arg(long, help = "Directory to create project in (default: current dir)")]
+        path: Option<String>,
+
+        #[arg(long, help = "Preview changes without creating")]
+        dry_run: bool,
+    },
+
+    #[command(about = "Sync current project with a template")]
+    Sync {
+        #[arg(long, help = "Template environment name")]
+        template: String,
+
+        #[arg(short, long, help = "Python version (override current version)")]
+        python: Option<String>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Exclude packages (comma-separated)"
+        )]
+        exclude: Option<Vec<String>>,
+
+        #[arg(
+            long,
+            value_delimiter = ',',
+            help = "Include only these packages (comma-separated)"
+        )]
+        include: Option<Vec<String>>,
+
+        #[arg(long, help = "Preview changes without syncing")]
+        dry_run: bool,
+    },
+
     #[command(about = "Update uvup to the latest version")]
     Update {
         #[arg(short, long, help = "Only check for updates without installing")]
         check: bool,
-    },
-
-    #[command(about = "Copy an environment to a new environment")]
-    Copy {
-        #[arg(help = "Source environment name")]
-        source: String,
-
-        #[arg(short, long, help = "Target environment name")]
-        name: String,
     },
 }

@@ -43,13 +43,16 @@ pub(crate) fn run() -> Result<()> {
 }
 
 fn is_valid_env(path: &std::path::Path) -> bool {
+    // Check for .venv subdirectory structure (new format)
+    let venv_path = path.join(".venv");
+
     #[cfg(target_os = "windows")]
     {
-        path.join("Scripts").join("Activate.ps1").exists()
+        venv_path.join("Scripts").join("Activate.ps1").exists()
     }
 
     #[cfg(not(target_os = "windows"))]
     {
-        path.join("bin").join("activate").exists()
+        venv_path.join("bin").join("activate").exists()
     }
 }
