@@ -1,6 +1,6 @@
 # uvup
 
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-blue)](https://deepwiki.com/KercyDing/uvup) [![uv](https://img.shields.io/badge/uv-black?logo=github)](https://github.com/astral-sh/uv)
+[![Docs](https://img.shields.io/badge/Docs-blue)](https://kercyding.github.io/uvup/) [![DeepWiki](https://img.shields.io/badge/DeepWiki-orange)](https://deepwiki.com/KercyDing/uvup) [![uv](https://img.shields.io/badge/uv-black?logo=github)](https://github.com/astral-sh/uv)
 
 A conda-like environment manager for [uv](https://github.com/astral-sh/uv).
 
@@ -27,198 +27,71 @@ curl -fsSL https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/install
 Invoke-RestMethod https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/install.ps1 | Invoke-Expression
 ```
 
-For detailed installation instructions, manual installation, and developer setup, see [Installation Guide](docs/INSTALL.md).
+See the [Installation Guide](https://kercyding.github.io/uvup/installation.html) for more details.
 
-## Uninstallation
-
-**Linux and macOS:**
-```bash
-curl -fsSL -O https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/uninstall.sh
-chmod +x uninstall.sh
-./uninstall.sh
-```
-
-**Windows (PowerShell):**
-```powershell
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/uninstall.ps1 -OutFile uninstall.ps1
-.\uninstall.ps1
-```
-
-For detailed uninstallation instructions and manual removal, see [Uninstallation Guide](docs/UNINSTALL.md).
-
-## Planned Features
-
-### v0.2.0 - Completed
-
-- [x] `uvup clone <source> <target>` - Clone environments (1:1 exact copy)
-- [x] `uvup new <name> --template <template>` - Create projects from templates
-- [x] `uvup sync --template <template>` - Sync current project with template
-- [x] Template modification support (--python, --exclude, --include)
-- [x] Dry-run preview mode for all template operations
-- [x] pyproject.toml-based dependency management
-- [x] optional-dependencies support
-
-### Future Versions
-
-- Official template repository with curated project templates
-- `uvup template list` - Browse available official templates
-- Auto-download templates on first use
-- `uvup default <name>` - Set default environment
-- Package manager support (Homebrew, Scoop, Winget)
-
-## Usage
-
-### Quick Start
+## Quick Start
 
 ```bash
-# Create a new environment
+# Create and activate environment
 uvup create myproject
-
-# Create with specific Python version
-uvup create myproject --python 3.12
-
-# List all environments
-uvup list
-
-# Activate an environment
 uvup activate myproject
 
-# Install packages (using uv)
-uv add numpy pandas
+# Add packages
+uvup add numpy pandas
+
+# Work with your code
+python script.py
 
 # Deactivate
 uvup deactivate
-
-# Remove an environment
-uvup remove myproject
 ```
 
-### Environment Cloning
+📖 **[Read the full documentation](https://kercyding.github.io/uvup/)** for complete usage guide.
 
-Clone an existing environment to create an exact 1:1 copy:
+## Key Features
 
+### Environment Management
 ```bash
-# Clone an environment
-uvup clone myproject myproject-backup
-
-# The cloned environment will have identical:
-# - Python version
-# - All dependencies (from pyproject.toml)
-# - Lock file (uv.lock)
+uvup create myenv          # Create environment
+uvup list                  # List all environments
+uvup activate myenv        # Activate environment
+uvup delete myenv          # Delete environment
 ```
 
-### Template-based Project Creation
-
-Create new projects from template environments with modification support:
-
+### Template System
 ```bash
-# Preview changes before creating
-uvup new myapp --template web-template --dry-run
+# Clone existing environment
+uvup clone source target
 
-# Create a project from a template
-uvup new myapp --template web-template
-
-# Create with custom Python version
-uvup new myapp --template web-template --python 3.11
-
-# Create with package filtering
-uvup new myapp --template web-template --exclude pytest,black
-uvup new myapp --template web-template --include numpy,pandas,requests
-
-# Create in a custom directory
-uvup new myapp --template web-template --path ~/projects
-```
-
-### Template Synchronization
-
-Sync an existing project with a template environment:
-
-```bash
-# Preview changes before syncing
-uvup sync --template web-template --dry-run
+# Create from template with modifications
+uvup new myapp --template web-template --exclude dev-tools
 
 # Sync current project with template
-cd myproject
-uvup sync --template web-template
-
-# Sync with Python version override
-uvup sync --template web-template --python 3.11
-
-# Sync with package filtering
-uvup sync --template web-template --exclude dev-packages
-uvup sync --template web-template --include numpy,pandas
+uvup sync --template web-template --dry-run
 ```
 
-### Command Categories
-
-uvup provides four distinct command categories:
-
-1. **Create** - Create empty environments
-   ```bash
-   uvup create myenv --python 3.12
-   ```
-
-2. **Clone** - 1:1 exact copy (no modifications)
-   ```bash
-   uvup clone source-env target-env
-   ```
-
-3. **New** - Create projects from templates (with modifications)
-   ```bash
-   uvup new myproject --template base-template --exclude pytest
-   ```
-
-4. **Sync** - Update current project from template (with modifications)
-   ```bash
-   uvup sync --template base-template --python 3.11
-   ```
-
-For complete command reference with all options and examples, see [COMMANDS.md](docs/COMMANDS.md).
+### Package Management
+```bash
+# After activation, manage packages from anywhere
+uvup add requests numpy pandas
+uvup remove pandas
+uvup lock --upgrade
+uvup tree
+```
 
 ## Documentation
 
-### Quick Help
+📖 **[Full Documentation](https://kercyding.github.io/uvup/)** - Complete user guide
 
-Use the built-in help system for command-specific usage:
-
-```bash
-# General help
-uvup --help
-
-# Command-specific help
-uvup new --help
-uvup sync --help
-uvup clone --help
-```
-
-### Complete Documentation
-
-- **[COMMANDS.md](docs/COMMANDS.md)** - Complete command reference with all options and examples
-- **[USE_CASES.md](docs/USE_CASES.md)** - Real-world usage scenarios and workflows
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
-
-## Scope
-
-uvup focuses on **environment management and template-based workflows**. For package management, use uv directly:
-
-```bash
-# Environment management with uvup
-uvup create myproject
-uvup activate myproject
-
-# Package management with uv
-uv add numpy pandas
-uv remove pandas
-uv lock
-uv sync
-```
+- [Installation](https://kercyding.github.io/uvup/installation.html) - Detailed setup instructions
+- [Quick Start](https://kercyding.github.io/uvup/quick-start.html) - Get started in minutes
+- [Command Reference](https://kercyding.github.io/uvup/commands/) - All commands with examples
+- [Use Cases](https://kercyding.github.io/uvup/use-cases/) - Real-world workflows
+- [Core Concepts](https://kercyding.github.io/uvup/core-concepts.html) - Design philosophy
 
 ## IDE Integration
 
-### VSCode
-
-Add to your `settings.json` to find your venv:
-
+**VSCode** - Add to your `settings.json`:
 ```json
 {
   "python.venvPath": "~/.uvup"

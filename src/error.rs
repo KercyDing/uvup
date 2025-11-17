@@ -12,6 +12,7 @@ pub(crate) enum UvupError {
     PathError(String),
     CommandExecutionFailed(String),
     UpdateFailed(String),
+    NoActiveEnvironment,
 }
 
 impl fmt::Display for UvupError {
@@ -53,6 +54,13 @@ impl fmt::Display for UvupError {
             }
             UvupError::UpdateFailed(msg) => {
                 write!(f, "Update failed: {msg}")
+            }
+            UvupError::NoActiveEnvironment => {
+                writeln!(f, "Error: No active environment")?;
+                write!(
+                    f,
+                    "Tip: Use 'uvup activate <name>' to activate an environment first"
+                )
             }
         }
     }

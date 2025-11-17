@@ -26,9 +26,9 @@ pub(crate) enum Commands {
     #[command(about = "List all environments")]
     List,
 
-    #[command(about = "Remove an environment")]
-    Remove {
-        #[arg(help = "Name of the environment to remove")]
+    #[command(about = "Delete an environment")]
+    Delete {
+        #[arg(help = "Name of the environment to delete")]
         name: String,
     },
 
@@ -103,5 +103,35 @@ pub(crate) enum Commands {
     Update {
         #[arg(short, long, help = "Only check for updates without installing")]
         check: bool,
+    },
+
+    #[command(about = "Add packages to the active environment")]
+    Add {
+        #[arg(help = "Packages to add", required = true)]
+        packages: Vec<String>,
+
+        #[arg(long, help = "Add to optional dependency group")]
+        group: Option<String>,
+    },
+
+    #[command(about = "Remove packages from the active environment")]
+    Remove {
+        #[arg(help = "Packages to remove", required = true)]
+        packages: Vec<String>,
+
+        #[arg(long, help = "Remove from optional dependency group")]
+        group: Option<String>,
+    },
+
+    #[command(about = "Update the lockfile of the active environment")]
+    Lock {
+        #[arg(long, help = "Update all packages to their latest versions")]
+        upgrade: bool,
+    },
+
+    #[command(about = "Display the dependency tree of the active environment")]
+    Tree {
+        #[arg(long, help = "Maximum depth to display")]
+        depth: Option<usize>,
     },
 }

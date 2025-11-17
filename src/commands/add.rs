@@ -13,7 +13,7 @@ pub(crate) fn run(packages: &[String], group: Option<String>) -> Result<()> {
     }
 
     let mut cmd = Command::new("uv");
-    cmd.arg("--project").arg(&env_path).arg("remove");
+    cmd.arg("--project").arg(&env_path).arg("add");
 
     if let Some(g) = group {
         cmd.arg("--group").arg(g);
@@ -21,15 +21,15 @@ pub(crate) fn run(packages: &[String], group: Option<String>) -> Result<()> {
 
     cmd.args(packages);
 
-    let status = cmd.status().map_err(|e| {
-        UvupError::CommandExecutionFailed(format!("Failed to execute uv remove: {e}"))
-    })?;
+    let status = cmd
+        .status()
+        .map_err(|e| UvupError::CommandExecutionFailed(format!("Failed to execute uv add: {e}")))?;
 
     if status.success() {
         Ok(())
     } else {
         Err(UvupError::CommandExecutionFailed(
-            "uv remove command failed".to_string(),
+            "uv add command failed".to_string(),
         ))
     }
 }

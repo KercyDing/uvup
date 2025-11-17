@@ -30,4 +30,5 @@ $RECYCLE.BIN/
 !PULL_REQUEST_TEMPLATE.md
 !CHANGELOG.md
 !CONTRIBUTING.md
-!docs/*
+!book/**
+book/build/
