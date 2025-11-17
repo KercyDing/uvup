@@ -83,14 +83,14 @@ uvup list
 # Activate an environment
 uvup activate myproject
 
-# Install packages (using uv)
-uv add numpy pandas
+# Add packages (using uvup proxy commands)
+uvup add numpy pandas
 
 # Deactivate
 uvup deactivate
 
-# Remove an environment
-uvup remove myproject
+# Delete an environment
+uvup delete myproject
 ```
 
 ### Environment Cloning
@@ -199,19 +199,33 @@ uvup clone --help
 
 ## Scope
 
-uvup focuses on **environment management and template-based workflows**. For package management, use uv directly:
+uvup now provides **integrated environment and package management**:
 
 ```bash
-# Environment management with uvup
+# Environment management
 uvup create myproject
+uvup list
+uvup delete myproject
+uvup clone source target
+
+# Activate environment
 uvup activate myproject
 
-# Package management with uv
-uv add numpy pandas
-uv remove pandas
-uv lock
-uv sync
+# Package management (requires activated environment)
+uvup add numpy pandas
+uvup add --group dev pytest black
+uvup remove pandas
+uvup lock
+uvup lock --upgrade
+uvup tree
+
+# Run commands directly (no uvup prefix needed)
+python script.py
+pytest
+jupyter notebook
 ```
+
+**Key Design**: After activation, use `uvup` commands for package operations but run executables directly.
 
 ## IDE Integration
 

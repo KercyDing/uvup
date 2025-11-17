@@ -3,7 +3,7 @@ use crate::env::paths::get_env_path;
 use std::env;
 use std::process::Command;
 
-pub(crate) fn run(packages: Vec<String>, group: Option<String>) -> Result<()> {
+pub(crate) fn run(depth: Option<usize>) -> Result<()> {
     let active_env = env::var("UVUP_ACTIVE_ENV")
         .map_err(|_| UvupError::NoActiveEnvironment)?;
 
@@ -14,23 +14,21 @@ pub(crate) fn run(packages: Vec<String>, group: Option<String>) -> Result<()> {
     }
 
     let mut cmd = Command::new("uv");
-    cmd.arg("--project").arg(&env_path).arg("remove");
+    cmd.arg("--project").arg(&env_path).arg("tree");
 
-    if let Some(g) = group {
-        cmd.arg("--group").arg(g);
+    if let Some(d) = depth {
+        cmd.arg("--depth").arg(d.to_string());
     }
 
-    cmd.args(&packages);
-
     let status = cmd.status().map_err(|e| {
-        UvupError::CommandExecutionFailed(format!("Failed to execute uv remove: {e}"))
+        UvupError::CommandExecutionFailed(format!("Failed to execute uv tree: {e}"))
     })?;
 
     if status.success() {
         Ok(())
     } else {
         Err(UvupError::CommandExecutionFailed(
-            "uv remove command failed".to_string(),
+            "uv tree command failed".to_string(),
         ))
     }
 }

@@ -29,7 +29,7 @@ uvup create my-first-project --python 3.12
 
 # 5. Activate and use it
 uvup activate my-first-project
-uv add requests numpy
+uvup add requests numpy
 python -c "import requests; print(requests.__version__)"
 uvup deactivate
 ```
@@ -40,7 +40,7 @@ uvup deactivate
 # Create a simple data science project
 uvup create ds-project
 uvup activate ds-project
-uv add numpy pandas matplotlib jupyter
+uvup add numpy pandas matplotlib jupyter
 jupyter notebook
 ```
 
@@ -54,22 +54,22 @@ Create reusable templates for different project types:
 # 1. Create base web template
 uvup create web-template
 uvup activate web-template
-uv add fastapi uvicorn pydantic
-uv add --group dev pytest black mypy ruff
+uvup add fastapi uvicorn pydantic
+uvup add --group dev pytest black mypy ruff
 uvup deactivate
 
 # 2. Create data science template
 uvup create ds-template
 uvup activate ds-template
-uv add numpy pandas matplotlib seaborn scikit-learn
-uv add --group dev jupyter ipykernel pytest
+uvup add numpy pandas matplotlib seaborn scikit-learn
+uvup add --group dev jupyter ipykernel pytest
 uvup deactivate
 
 # 3. Create CLI tool template
 uvup create cli-template
 uvup activate cli-template
-uv add click rich typer
-uv add --group dev pytest pytest-cov
+uvup add click rich typer
+uvup add --group dev pytest pytest-cov
 uvup deactivate
 ```
 
@@ -109,9 +109,9 @@ uvup sync --template web-template --exclude pytest,black,mypy
 # Team lead creates template
 uvup create team-base-template --python 3.11
 uvup activate team-base-template
-uv add requests httpx pydantic sqlalchemy
-uv add --group dev pytest black mypy ruff pre-commit
-uv add --group docs sphinx sphinx-rtd-theme
+uvup add requests httpx pydantic sqlalchemy
+uvup add --group dev pytest black mypy ruff pre-commit
+uvup add --group docs sphinx sphinx-rtd-theme
 uvup deactivate
 
 # Team lead shares the pyproject.toml
@@ -187,7 +187,7 @@ uvup clone production-env experiment-env
 
 # Activate and test new packages
 uvup activate experiment-env
-uv add experimental-package
+uvup add experimental-package
 python -m pytest
 # ... experiment ...
 uvup deactivate
@@ -198,7 +198,7 @@ uvup sync --template production-template --dry-run
 uvup sync --template production-template
 
 # If failed, just remove experiment
-uvup remove experiment-env
+uvup delete experiment-env
 ```
 
 ### Upgrading Dependencies
@@ -209,20 +209,20 @@ uvup clone my-project my-project-backup
 
 # Upgrade in original
 uvup activate my-project
-uv add numpy@latest pandas@latest
+uvup add numpy@latest pandas@latest
 python -m pytest
 # ... verify everything works ...
 uvup deactivate
 
 # If successful, update template
 cd ~/.uvup/my-project-template
-uv add numpy@latest pandas@latest
+uvup add numpy@latest pandas@latest
 uv lock
 
 # If failed, restore from backup
-uvup remove my-project
+uvup delete my-project
 uvup clone my-project-backup my-project
-uvup remove my-project-backup
+uvup delete my-project-backup
 ```
 
 ## Advanced Patterns
@@ -235,19 +235,19 @@ uvup remove my-project-backup
 # Base template with core dependencies
 uvup create base-template
 uvup activate base-template
-uv add fastapi uvicorn pydantic sqlalchemy
+uvup add fastapi uvicorn pydantic sqlalchemy
 uvup deactivate
 
 # Development environment (full stack)
 uvup new my-project-dev --template base-template
 cd my-project-dev
-uv add --group dev pytest black mypy ruff ipython
-uv add --group dev pytest-cov pytest-asyncio
+uvup add --group dev pytest black mypy ruff ipython
+uvup add --group dev pytest-cov pytest-asyncio
 
 # Testing environment (dev + test tools only)
 uvup new my-project-test --template base-template
 cd ../my-project-test
-uv add --group dev pytest pytest-cov pytest-asyncio
+uvup add --group dev pytest pytest-cov pytest-asyncio
 
 # Production environment (minimal)
 uvup new my-project-prod --template base-template \
@@ -262,22 +262,22 @@ uvup new my-project-prod --template base-template \
 # Create shared base template
 uvup create microservice-base
 uvup activate microservice-base
-uv add fastapi uvicorn pydantic httpx
-uv add --group dev pytest pytest-asyncio
+uvup add fastapi uvicorn pydantic httpx
+uvup add --group dev pytest pytest-asyncio
 uvup deactivate
 
 # Create service-specific projects
 uvup new auth-service --template microservice-base
 cd auth-service
-uv add pyjwt passlib[bcrypt] python-multipart
+uvup add pyjwt passlib[bcrypt] python-multipart
 
 uvup new user-service --template microservice-base
 cd ../user-service
-uv add sqlalchemy asyncpg alembic
+uvup add sqlalchemy asyncpg alembic
 
 uvup new notification-service --template microservice-base
 cd ../notification-service
-uv add aiosmtplib jinja2 celery
+uvup add aiosmtplib jinja2 celery
 ```
 
 ### Educational Environments
@@ -288,7 +288,7 @@ uv add aiosmtplib jinja2 celery
 # Instructor creates course template
 uvup create course-python-basics
 uvup activate course-python-basics
-uv add ipython jupyter notebook pytest
+uvup add ipython jupyter notebook pytest
 uvup deactivate
 
 # Students clone for each module
@@ -298,10 +298,10 @@ uvup new module-03-classes --template course-python-basics
 
 # Each module can have specific packages
 cd module-02-functions
-uv add hypothesis  # for property-based testing
+uvup add hypothesis  # for property-based testing
 
 cd ../module-03-classes
-uv add attrs pydantic  # for class examples
+uvup add attrs pydantic  # for class examples
 ```
 
 ### CI/CD Integration
@@ -312,7 +312,7 @@ uv add attrs pydantic  # for class examples
 # Local development
 uvup create ci-template
 uvup activate ci-template
-uv add pytest pytest-cov black mypy ruff
+uvup add pytest pytest-cov black mypy ruff
 uvup deactivate
 
 # Export for CI (Dockerfile)
@@ -366,7 +366,7 @@ YAML
 # Base template
 uvup create app-template
 uvup activate app-template
-uv add requests flask numpy
+uvup add requests flask numpy
 uvup deactivate
 
 # Test with minimum versions
@@ -380,7 +380,7 @@ uv run pytest
 # Test with latest versions
 uvup new app-latest-versions --template app-template
 cd ../app-latest-versions
-uv add requests@latest flask@latest numpy@latest
+uvup add requests@latest flask@latest numpy@latest
 uv run pytest
 
 # Test without optional dependencies
@@ -428,7 +428,7 @@ for template in web-template ds-template cli-template; do
   if uvup list | grep -q "$template"; then
     echo "Updating $template..."
     cd ~/.uvup/$template
-    uv add --upgrade $(uv pip list --format=freeze | cut -d= -f1)
+    uvup add --upgrade $(uv pip list --format=freeze | cut -d= -f1)
     uv lock
   fi
 done

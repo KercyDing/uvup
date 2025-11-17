@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-11-17
+
+### Added
+
+- **Package Management Commands**: Integrated package management with environment activation
+  - `uvup add <packages>` - Add packages to active environment (supports `--group`)
+  - `uvup remove <packages>` - Remove packages from active environment (supports `--group`)
+  - `uvup lock` - Update lockfile of active environment (supports `--upgrade`)
+  - `uvup tree` - Display dependency tree of active environment (supports `--depth`)
+- All package commands use `uv --project` internally, allowing management from any directory
+
+### Changed
+
+- **Breaking**: Renamed `uvup remove <name>` to `uvup delete <name>` for environment deletion
+  - This clarifies the distinction between deleting environments vs removing packages
+  - `remove` is now exclusively for package removal
+
+### Documentation
+
+- Updated README.md with integrated package management examples
+- Updated COMMANDS.md with complete package management command reference
+- Updated USE_CASES.md replacing all `uv add`/`uv remove` with `uvup` equivalents
+- Added design philosophy explanation for command organization
+
+### Technical
+
+- Added `commands/add.rs` for package addition
+- Renamed `commands/remove.rs` to `commands/delete.rs` for environment deletion
+- Created new `commands/remove.rs` for package removal
+- Added `commands/lock.rs` for lockfile management
+- Added `commands/tree.rs` for dependency tree display
+- Added `NoActiveEnvironment` error type for better error messages
+
 ## [0.2.0] - 2025-11-17
 
 ### Added
@@ -133,6 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - clap 4.5 - CLI framework
 - dirs 6.0 - Cross-platform directory paths
 
+[0.2.1]: https://github.com/KercyDing/uvup/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/KercyDing/uvup/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/KercyDing/uvup/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/KercyDing/uvup/compare/v0.1.1...v0.1.2

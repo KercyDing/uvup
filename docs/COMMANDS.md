@@ -7,14 +7,22 @@ Complete reference for all uvup commands.
 - [Environment Management](#environment-management)
   - [create](#create)
   - [list](#list)
-  - [remove](#remove)
-- [Environment Operations](#environment-operations)
+  - [delete](#delete)
   - [clone](#clone)
+- [Project Management](#project-management)
   - [new](#new)
   - [sync](#sync)
+- [Package Management](#package-management)
+  - [add](#add)
+  - [remove](#remove)
+  - [lock](#lock)
+  - [tree](#tree)
 - [System](#system)
   - [init](#init)
   - [update](#update)
+- [Shell Commands](#shell-commands)
+  - [activate](#activate)
+  - [deactivate](#deactivate)
 
 ## Environment Management
 
@@ -70,32 +78,30 @@ uvup list
 
 ---
 
-### remove
+### delete
 
-Remove an existing environment.
+Delete an existing environment.
 
 **Usage:**
 ```bash
-uvup remove <name>
+uvup delete <name>
 ```
 
 **Arguments:**
-- `<name>` - Name of the environment to remove
+- `<name>` - Name of the environment to delete
 
 **Examples:**
 ```bash
-uvup remove myproject
+uvup delete myproject
 ```
 
 **Notes:**
 - Permanently deletes the environment directory
 - Cannot be undone
 - Fails if environment doesn't exist
-- Only one environment can be removed at a time
+- Only one environment can be deleted at a time
 
 ---
-
-## Environment Operations
 
 ### clone
 
@@ -135,6 +141,8 @@ uvup clone production testing
 - Automatically syncs packages from lock file
 
 ---
+
+## Project Management
 
 ### new
 
@@ -307,6 +315,147 @@ To sync this project, run the same command without --dry-run
 
 ---
 
+## Package Management
+
+All package management commands require an activated environment. They use `uv --project` internally, allowing you to manage packages from any directory.
+
+### add
+
+Add packages to the active environment.
+
+**Usage:**
+```bash
+uvup add <packages...> [OPTIONS]
+```
+
+**Arguments:**
+- `<packages...>` - One or more packages to add
+
+**Options:**
+- `--group <name>` - Add to optional dependency group
+
+**Examples:**
+```bash
+# Activate environment first
+uvup activate myproject
+
+# Add packages
+uvup add requests numpy pandas
+
+# Add with version specifiers
+uvup add "requests>=2.28.0" "numpy<2.0"
+
+# Add to development group
+uvup add --group dev pytest black mypy
+```
+
+**Notes:**
+- Requires an activated environment
+- Updates `pyproject.toml` and `uv.lock`
+- Installs packages immediately
+- Works from any directory (not just project root)
+
+---
+
+### remove
+
+Remove packages from the active environment.
+
+**Usage:**
+```bash
+uvup remove <packages...> [OPTIONS]
+```
+
+**Arguments:**
+- `<packages...>` - One or more packages to remove
+
+**Options:**
+- `--group <name>` - Remove from optional dependency group
+
+**Examples:**
+```bash
+# Activate environment first
+uvup activate myproject
+
+# Remove packages
+uvup remove requests numpy
+
+# Remove from development group
+uvup remove --group dev pytest
+```
+
+**Notes:**
+- Requires an activated environment
+- Updates `pyproject.toml` and `uv.lock`
+- Uninstalls packages immediately
+- Works from any directory (not just project root)
+
+---
+
+### lock
+
+Update the lockfile of the active environment.
+
+**Usage:**
+```bash
+uvup lock [OPTIONS]
+```
+
+**Options:**
+- `--upgrade` - Upgrade all packages to their latest compatible versions
+
+**Examples:**
+```bash
+# Activate environment first
+uvup activate myproject
+
+# Update lock file
+uvup lock
+
+# Upgrade all packages
+uvup lock --upgrade
+```
+
+**Notes:**
+- Requires an activated environment
+- Updates `uv.lock` based on `pyproject.toml`
+- Does not install packages (use `uv sync` to install)
+- Works from any directory (not just project root)
+
+---
+
+### tree
+
+Display the dependency tree of the active environment.
+
+**Usage:**
+```bash
+uvup tree [OPTIONS]
+```
+
+**Options:**
+- `--depth <n>` - Maximum depth to display
+
+**Examples:**
+```bash
+# Activate environment first
+uvup activate myproject
+
+# Show full dependency tree
+uvup tree
+
+# Limit depth
+uvup tree --depth 2
+```
+
+**Notes:**
+- Requires an activated environment
+- Shows hierarchical view of dependencies
+- Helps identify dependency conflicts
+- Works from any directory (not just project root)
+
+---
+
 ## System
 
 ### init
@@ -376,7 +525,7 @@ uvup update --check
 
 ---
 
-## Shell-only Commands
+## Shell Commands
 
 These commands are available only after running `uvup init`:
 
@@ -397,6 +546,13 @@ uvup activate <name>
 uvup activate myproject
 ```
 
+**Notes:**
+- Sets `UVUP_ACTIVE_ENV` environment variable
+- Modifies PATH to include environment's bin directory
+- Enables package management commands (add/remove/lock/tree)
+
+---
+
 ### deactivate
 
 Deactivate the current virtual environment.
@@ -411,6 +567,11 @@ uvup deactivate
 uvup deactivate
 ```
 
+**Notes:**
+- Clears `UVUP_ACTIVE_ENV` environment variable
+- Restores original PATH
+- Disables package management commands
+
 ---
 
 ## Command Decision Tree
@@ -424,9 +585,15 @@ uvup deactivate
 - Current project from template → `sync`
 - uvup itself → `update`
 
-**Need to manage?**
+**Need to manage environments?**
 - See all environments → `list`
-- Delete environment → `remove`
+- Delete environment → `delete`
+
+**Need to manage packages?** (requires activation)
+- Add packages → `add`
+- Remove packages → `remove`
+- Update lockfile → `lock`
+- View dependencies → `tree`
 
 **Need to use?**
 - Enable activation → `init`
