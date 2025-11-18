@@ -17,10 +17,11 @@ fn cleanup_test_env(name: &str) {
 
 #[test]
 fn test_init_command() {
+    // Test --raw flag to get shell script output
     let output = Command::new("cargo")
-        .args(["run", "--", "init"])
+        .args(["run", "--", "init", "--raw"])
         .output()
-        .expect("Failed to execute uvup init");
+        .expect("Failed to execute uvup init --raw");
 
     assert!(output.status.success());
 
