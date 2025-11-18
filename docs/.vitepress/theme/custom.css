@@ -1,0 +1,37 @@
+/**
+ * Customize default theme styling by overriding CSS variables:
+ * https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css
+ */
+
+/**
+ * Hero text styling - force single line
+ */
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe 30%, #41d1ff);
+}
+
+.VPHero .text {
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+}
+
+.VPHero .tagline {
+  max-width: 100% !important;
+  white-space: nowrap !important;
+}
+
+/**
+ * Colors
+ */
+:root {
+  --vp-c-brand-1: #646cff;
+  --vp-c-brand-2: #747bff;
+  --vp-c-brand-3: #535bf2;
+}
+
+.dark {
+  --vp-c-brand-1: #747bff;
+  --vp-c-brand-2: #646cff;
+  --vp-c-brand-3: #535bf2;
+}

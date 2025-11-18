@@ -86,7 +86,7 @@ fn detect_available_shells() -> Vec<ShellType> {
     #[cfg(not(target_os = "windows"))]
     {
         // On Unix-like systems, detect commonly used shells
-        let mut detected = std::collections::HashSet::new();
+        let mut detected = HashSet::new();
 
         // Check for bash
         if is_shell_available("bash") {
@@ -174,9 +174,8 @@ fn initialize_powershell(dry_run: bool) -> Result<()> {
     }
 
     // Append initialization
-    let init_code = format!(
-        "\n{INIT_MARKER_START}\nInvoke-Expression ((uvup init) -join \"`n\")\n"
-    );
+    let init_code =
+        format!("\n{INIT_MARKER_START}\nInvoke-Expression ((uvup init --raw) -join \"`n\")\n");
 
     let new_content = content + &init_code;
     fs::write(&profile_path, new_content)?;
@@ -333,7 +332,7 @@ fi
     }
 
     // Append initialization to .bashrc
-    let init_code = format!("\n{INIT_MARKER_START}\neval \"$(uvup init)\"\n");
+    let init_code = format!("\n{INIT_MARKER_START}\neval \"$(uvup init --raw)\"\n");
 
     let new_content = bashrc_content + &init_code;
     fs::write(&bashrc_path, new_content)?;
@@ -369,7 +368,7 @@ fn initialize_bash_unix(dry_run: bool) -> Result<()> {
     }
 
     // Append initialization
-    let init_code = format!("\n{}\neval \"$(uvup init)\"\n", INIT_MARKER_START);
+    let init_code = format!("\n{INIT_MARKER_START}\neval \"$(uvup init --raw)\"\n");
 
     let new_content = content + &init_code;
     fs::write(&profile_path, new_content)?;
@@ -517,7 +516,10 @@ fn initialize_fish_impl(dry_run: bool) -> Result<()> {
 
     println!("✓ Fish initialized");
     println!("  Config: {}", config_path.display());
-    println!("  Please restart your Fish session or run: source {}", config_path.display());
+    println!(
+        "  Please restart your Fish session or run: source {}",
+        config_path.display()
+    );
 
     Ok(())
 }

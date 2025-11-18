@@ -1,6 +1,6 @@
 use crate::error::{Result, UvupError};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(crate) enum ShellType {
     Bash,
     Zsh,

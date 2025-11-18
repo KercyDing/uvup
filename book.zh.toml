@@ -1,12 +1,12 @@
 [book]
-title = "uvup Documentation"
+title = "uvup 文档"
 authors = ["KercyDing"]
-language = "en"
-src = "book/src"
-description = "A conda-like environment manager for uv"
+language = "zh"
+src = "book/src/zh"
+description = "类似 conda 的 uv 环境管理器"
 
 [build]
-build-dir = "book/build"
+build-dir = "book/build/zh"
 
 [output.html]
 default-theme = "rust"
@@ -14,7 +14,7 @@ preferred-dark-theme = "navy"
 git-repository-url = "https://github.com/KercyDing/uvup"
 git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/KercyDing/uvup/edit/main/{path}"
-additional-js = ["lang-en.js"]
+additional-js = ["lang-zh.js"]
 
 [output.html.fold]
 enable = false

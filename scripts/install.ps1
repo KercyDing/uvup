@@ -37,43 +37,25 @@ if ($userPath -notlike "*$INSTALL_DIR*") {
     Write-Host "Adding $INSTALL_DIR to PATH..." -ForegroundColor Yellow
     [Environment]::SetEnvironmentVariable("Path", "$userPath;$INSTALL_DIR", "User")
     $env:Path = "$env:Path;$INSTALL_DIR"
-    Write-Host "PATH updated. You may need to restart your terminal." -ForegroundColor Yellow
+    Write-Host "PATH updated." -ForegroundColor Green
 }
 
 Write-Host ""
 Write-Host "uvup installed successfully!" -ForegroundColor Green
 
-# Add uvup initialization to PowerShell profile
-# Use CurrentUserAllHosts (profile.ps1) - works for all PowerShell hosts
-$PROFILE_PATH = $PROFILE.CurrentUserAllHosts
-if (-not $PROFILE_PATH) {
-    $PROFILE_PATH = "$env:USERPROFILE\Documents\PowerShell\profile.ps1"
+Write-Host ""
+Write-Host "Configuring shell integration..." -ForegroundColor Cyan
+
+# Run uvup init to configure all shells
+try {
+    & uvup init
+    Write-Host ""
+    Write-Host "Shell integration configured successfully!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Please restart your terminal to start using uvup." -ForegroundColor Cyan
+} catch {
+    Write-Host "Warning: Could not run uvup init" -ForegroundColor Yellow
+    Write-Host "Please run 'uvup init' manually after restarting your terminal." -ForegroundColor Yellow
 }
 
 Write-Host ""
-Write-Host "Configuring PowerShell profile..." -ForegroundColor Cyan
-
-# Create profile if it doesn't exist
-if (-not (Test-Path $PROFILE_PATH)) {
-    $profileDir = Split-Path $PROFILE_PATH -Parent
-    if (-not (Test-Path $profileDir)) {
-        New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
-    }
-    New-Item -ItemType File -Path $PROFILE_PATH -Force | Out-Null
-    Write-Host "Created profile at: $PROFILE_PATH" -ForegroundColor Green
-}
-
-# Check if already exists
-$profileContent = Get-Content $PROFILE_PATH -Raw -ErrorAction SilentlyContinue
-if ($profileContent -match 'uvup init.*Invoke-Expression') {
-    Write-Host "uvup initialization already exists in profile" -ForegroundColor Yellow
-} else {
-    # Add initialization line
-    $initLine = 'Invoke-Expression ((uvup init) -join "`n")'
-    Add-Content -Path $PROFILE_PATH -Value "`n# uvup initialization"
-    Add-Content -Path $PROFILE_PATH -Value $initLine
-    Write-Host "Added uvup initialization to profile" -ForegroundColor Green
-}
-
-Write-Host ""
-Write-Host "Please restart your terminal to continue." -ForegroundColor Cyan

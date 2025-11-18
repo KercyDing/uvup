@@ -5,38 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.1] - 2025-11-17
+## [0.2.1] - 2025-11-19
 
 ### Added
 
-- **Package Management Commands**: Integrated package management with environment activation
-  - `uvup add <packages>` - Add packages to active environment (supports `--group`)
-  - `uvup remove <packages>` - Remove packages from active environment (supports `--group`)
-  - `uvup lock` - Update lockfile of active environment (supports `--upgrade`)
-  - `uvup tree` - Display dependency tree of active environment (supports `--depth`)
-- All package commands use `uv --project` internally, allowing management from any directory
+- **Package Management**: Integrated commands working with active environment
+  - `uvup add/remove/lock/tree` - Manage packages from any directory after activation
+- **Enhanced Init Command**: Multi-shell configuration management
+  - `uvup init [shell]` - Initialize specific shell or auto-detect all shells
+  - `--raw` - Print integration script without installing
+  - `--reverse` - Remove uvup from shell configurations
+  - `--dry-run` - Preview changes before applying
+- **VitePress Documentation**: Professional bilingual documentation site
+  - English and Chinese support with unified sidebar navigation
+  - Real-world integration examples (CI/CD, Docker, VSCode, Pre-commit Hooks)
+  - GitHub Pages deployment with pnpm
 
 ### Changed
 
 - **Breaking**: Renamed `uvup remove <name>` to `uvup delete <name>` for environment deletion
-  - This clarifies the distinction between deleting environments vs removing packages
   - `remove` is now exclusively for package removal
+- Migrated from mdBook to VitePress for better UI and i18n support
 
-### Documentation
+### Fixed
 
-- Updated README.md with integrated package management examples
-- Updated COMMANDS.md with complete package management command reference
-- Updated USE_CASES.md replacing all `uv add`/`uv remove` with `uvup` equivalents
-- Added design philosophy explanation for command organization
+- Shell activation script paths on Windows (Scripts/ vs bin/)
+- UVUP_ACTIVE_ENV environment variable tracking across shells
 
 ### Technical
 
-- Added `commands/add.rs` for package addition
-- Renamed `commands/remove.rs` to `commands/delete.rs` for environment deletion
-- Created new `commands/remove.rs` for package removal
-- Added `commands/lock.rs` for lockfile management
-- Added `commands/tree.rs` for dependency tree display
-- Added `NoActiveEnvironment` error type for better error messages
+- Added `commands/{add,delete,lock,tree}.rs` for package management
+- Enhanced `commands/init.rs` with multi-shell support (579 lines)
+- Created VitePress configuration with bilingual sidebar structure
+- Updated GitHub Actions workflow for VitePress deployment
 
 ## [0.2.0] - 2025-11-17
 
