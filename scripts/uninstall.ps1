@@ -91,7 +91,4 @@ if (Test-Path $PROFILE_PATH) {
 }
 
 Write-Host ""
-Write-Host "To start using uvup, run:" -ForegroundColor Cyan
-Write-Host "  . `$PROFILE" -ForegroundColor White
-Write-Host ""
-Write-Host "Or restart your terminal." -ForegroundColor Cyan
+Write-Host "Please restart your terminal to continue." -ForegroundColor Cyan

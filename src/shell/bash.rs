@@ -8,9 +8,16 @@ uvup() {
         fi
 
         local env_path="$HOME/.uvup/$2/.venv"
-        local activate_script="$env_path/bin/activate"
+        local activate_script=""
 
-        if [ ! -f "$activate_script" ]; then
+        # Check for Windows (Git Bash) or Unix paths
+        if [ -f "$env_path/Scripts/activate" ]; then
+            activate_script="$env_path/Scripts/activate"
+        elif [ -f "$env_path/bin/activate" ]; then
+            activate_script="$env_path/bin/activate"
+        fi
+
+        if [ -z "$activate_script" ]; then
             echo "Error: Environment '$2' not found"
             echo "Tip: Use 'uvup list' to see all available environments"
             return 1
