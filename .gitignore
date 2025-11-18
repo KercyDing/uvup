@@ -30,5 +30,10 @@ $RECYCLE.BIN/
 !PULL_REQUEST_TEMPLATE.md
 !CHANGELOG.md
 !CONTRIBUTING.md
-!book/**
+!docs/**
 book/build/
+
+# VitePress
+docs/node_modules
+docs/.vitepress/dist
+docs/.vitepress/cache

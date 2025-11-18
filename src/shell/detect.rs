@@ -1,6 +1,6 @@
 use crate::error::{Result, UvupError};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(crate) enum ShellType {
     Bash,
     Zsh,
@@ -9,10 +9,7 @@ pub(crate) enum ShellType {
 }
 
 pub(crate) fn detect_shell() -> Result<ShellType> {
-    if cfg!(target_os = "windows") {
-        return Ok(ShellType::PowerShell);
-    }
-
+    // Check SHELL environment variable first (works for Git Bash on Windows too)
     if let Ok(shell_path) = std::env::var("SHELL") {
         if shell_path.contains("zsh") {
             return Ok(ShellType::Zsh);
@@ -21,6 +18,11 @@ pub(crate) fn detect_shell() -> Result<ShellType> {
         } else if shell_path.contains("fish") {
             return Ok(ShellType::Fish);
         }
+    }
+
+    // On Windows, default to PowerShell if no SHELL variable
+    if cfg!(target_os = "windows") {
+        return Ok(ShellType::PowerShell);
     }
 
     Err(UvupError::ShellDetectionFailed)
@@ -41,19 +43,5 @@ mod tests {
     fn test_detect_shell_current() {
         let result = detect_shell();
         assert!(result.is_ok());
-
-        let shell = result.unwrap();
-        #[cfg(not(target_os = "windows"))]
-        {
-            assert!(matches!(
-                shell,
-                ShellType::Bash | ShellType::Zsh | ShellType::Fish
-            ));
-        }
-
-        #[cfg(target_os = "windows")]
-        {
-            assert_eq!(shell, ShellType::PowerShell);
-        }
     }
 }

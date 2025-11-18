@@ -1,19 +1,22 @@
 pub(crate) const POWERSHELL_HOOK: &str = r#"
 function uvup {
-    param([string[]]$Arguments)
+    if ($args.Count -eq 0) {
+        & uvup.exe
+        return
+    }
 
-    if ($Arguments[0] -eq "activate") {
-        if (-not $Arguments[1]) {
+    if ($args[0] -eq "activate") {
+        if (-not $args[1]) {
             Write-Host "Error: Please specify environment name" -ForegroundColor Red
             Write-Host "Usage: uvup activate <name>"
             return
         }
 
-        $envPath = "$env:USERPROFILE\.uvup\$($Arguments[1])\.venv"
+        $envPath = "$env:USERPROFILE\.uvup\$($args[1])\.venv"
         $activateScript = "$envPath\Scripts\Activate.ps1"
 
         if (-not (Test-Path $activateScript)) {
-            Write-Host "Error: Environment '$($Arguments[1])' not found" -ForegroundColor Red
+            Write-Host "Error: Environment '$($args[1])' not found" -ForegroundColor Red
             Write-Host "Tip: Use 'uvup list' to see all available environments"
             return
         }
@@ -23,11 +26,11 @@ function uvup {
         }
 
         & $activateScript
-        $env:UVUP_ACTIVE_ENV = $Arguments[1]
+        $env:UVUP_ACTIVE_ENV = $args[1]
 
-    } elseif ($Arguments[0] -eq "deactivate") {
-        if ($Arguments[1]) {
-            Write-Host "Error: Unknown command 'uvup deactivate $($Arguments[1])'" -ForegroundColor Red
+    } elseif ($args[0] -eq "deactivate") {
+        if ($args[1]) {
+            Write-Host "Error: Unknown command 'uvup deactivate $($args[1])'" -ForegroundColor Red
             Write-Host "Did you mean: uvup deactivate"
             return
         }
@@ -39,7 +42,7 @@ function uvup {
             Write-Host "Error: No active environment" -ForegroundColor Red
         }
     } else {
-        & uvup.exe $Arguments
+        & uvup.exe @args
     }
 }
 "#;

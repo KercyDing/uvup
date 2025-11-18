@@ -21,7 +21,12 @@ fn run() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Init => commands::init::run()?,
+        Commands::Init {
+            shell,
+            raw,
+            reverse,
+            dry_run,
+        } => commands::init::run(shell, raw, reverse, dry_run)?,
         Commands::Create { name, python } => {
             commands::create::run(name, python.as_deref())?;
         }

@@ -74,59 +74,72 @@ echo "uvup installed successfully!"
 
 # Check if install directory is in PATH
 case ":$PATH:" in
-    *":$INSTALL_DIR:"*) ;;
+    *":$INSTALL_DIR:"*)
+        PATH_CONFIGURED=1
+        ;;
     *)
         echo ""
-        echo "Warning: $INSTALL_DIR is not in your PATH"
-        echo "Add the following to your shell configuration file:"
-        echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
-        ;;
-esac
+        echo "Adding $INSTALL_DIR to PATH..."
+        # Determine shell config file
+        SHELL_NAME=$(basename "$SHELL")
+        case "$SHELL_NAME" in
+            bash)
+                SHELL_RC="$HOME/.bashrc"
+                ;;
+            zsh)
+                SHELL_RC="$HOME/.zshrc"
+                ;;
+            fish)
+                SHELL_RC="$HOME/.config/fish/config.fish"
+                ;;
+            *)
+                SHELL_RC="$HOME/.profile"
+                ;;
+        esac
 
-# Detect shell and provide init instructions
-SHELL_NAME=$(basename "$SHELL")
-SHELL_RC=""
-INIT_LINE=""
+        # Add to PATH in shell config
+        if [ -f "$SHELL_RC" ] && ! grep -q "$INSTALL_DIR" "$SHELL_RC"; then
+            echo "" >> "$SHELL_RC"
+            echo "# uvup path" >> "$SHELL_RC"
+            echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_RC"
+            echo "Added to PATH in $SHELL_RC"
+        fi
 
-case "$SHELL_NAME" in
-    bash)
-        SHELL_RC="$HOME/.bashrc"
-        INIT_LINE='eval "$(uvup init)"'
-        ;;
-    zsh)
-        SHELL_RC="$HOME/.zshrc"
-        INIT_LINE='eval "$(uvup init)"'
-        ;;
-    fish)
-        SHELL_RC="$HOME/.config/fish/config.fish"
-        INIT_LINE='uvup init | source'
-        ;;
-    *)
-        SHELL_RC="$HOME/.profile"
-        INIT_LINE='eval "$(uvup init)"'
+        # Add to current session
+        export PATH="$INSTALL_DIR:$PATH"
+        PATH_CONFIGURED=1
         ;;
 esac
 
 echo ""
 echo "Configuring shell integration..."
 
-# Check if already exists
-if [ -f "$SHELL_RC" ] && grep -q "eval.*uvup init\|uvup init.*source" "$SHELL_RC"; then
-    echo "uvup initialization already exists in $SHELL_RC"
+# Run uvup init to configure all shells
+if command -v uvup >/dev/null 2>&1; then
+    uvup init
+    echo ""
+    echo "Shell integration configured successfully!"
+    echo ""
+    echo "To start using uvup, restart your terminal or run:"
+
+    SHELL_NAME=$(basename "$SHELL")
+    case "$SHELL_NAME" in
+        bash)
+            echo "  source ~/.bashrc"
+            ;;
+        zsh)
+            echo "  source ~/.zshrc"
+            ;;
+        fish)
+            echo "  source ~/.config/fish/config.fish"
+            ;;
+        *)
+            echo "  source ~/.profile"
+            ;;
+    esac
 else
-    # Create shell RC if it doesn't exist
-    touch "$SHELL_RC"
-
-    # Add init line
-    echo "" >> "$SHELL_RC"
-    echo "# uvup initialization" >> "$SHELL_RC"
-    echo "$INIT_LINE" >> "$SHELL_RC"
-
-    echo "Added uvup initialization to $SHELL_RC"
+    echo "Warning: uvup not found in PATH"
+    echo "Please add $INSTALL_DIR to your PATH and run: uvup init"
 fi
 
 echo ""
-echo "To start using uvup, run:"
-echo "  source $SHELL_RC"
-echo ""
-echo "Or restart your terminal."

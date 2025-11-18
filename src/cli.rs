@@ -12,14 +12,28 @@ pub(crate) struct Cli {
 #[derive(Subcommand)]
 pub(crate) enum Commands {
     #[command(about = "Initialize uvup shell integration")]
-    Init,
+    Init {
+        #[arg(
+            help = "Shell to initialize (powershell, bash, zsh, fish). If not specified, initializes all detected shells"
+        )]
+        shell: Option<String>,
+
+        #[arg(long, help = "Print shell script instead of installing")]
+        raw: bool,
+
+        #[arg(long, help = "Remove uvup initialization")]
+        reverse: bool,
+
+        #[arg(long, help = "Show what would be done without making changes")]
+        dry_run: bool,
+    },
 
     #[command(about = "Create a new virtual environment")]
     Create {
         #[arg(help = "Name of the environment")]
         name: String,
 
-        #[arg(short, long, global = true, help = "Python version (default: 3.12)")]
+        #[arg(short, long, help = "Python version (default: 3.12)")]
         python: Option<String>,
     },
 

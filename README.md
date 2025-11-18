@@ -27,22 +27,38 @@ curl -fsSL https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/install
 Invoke-RestMethod https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/install.ps1 | Invoke-Expression
 ```
 
-See the [Installation Guide](https://kercyding.github.io/uvup/installation.html) for more details.
+**After installation, initialize your shell:**
+```bash
+# Automatically configure all detected shells
+uvup init
+```
+
+See the [Installation Guide](https://kercyding.github.io/uvup/guide/installation) for more details.
 
 ## Quick Start
 
 ```bash
-# Create and activate environment
+# 1. Initialize shell integration (first time only)
+uvup init
+
+# 2. Restart your terminal or reload configuration
+# For Bash: source ~/.bashrc
+# For Zsh: source ~/.zshrc
+# For Fish: source ~/.config/fish/config.fish
+# For PowerShell: restart terminal
+
+# 3. Create and activate environment
 uvup create myproject
 uvup activate myproject
 
-# Add packages
+# 4. Add packages
 uvup add numpy pandas
 
-# Work with your code
-python script.py
+# 5. Work with your code
+python script.py   # Classic usage
+uv run script.py   # uv-like usage
 
-# Deactivate
+# 6. Deactivate
 uvup deactivate
 ```
 
@@ -83,11 +99,11 @@ uvup tree
 
 📖 **[Full Documentation](https://kercyding.github.io/uvup/)** - Complete user guide
 
-- [Installation](https://kercyding.github.io/uvup/installation.html) - Detailed setup instructions
-- [Quick Start](https://kercyding.github.io/uvup/quick-start.html) - Get started in minutes
-- [Command Reference](https://kercyding.github.io/uvup/commands/) - All commands with examples
+- [Installation](https://kercyding.github.io/uvup/guide/installation) - Detailed setup instructions
+- [Quick Start](https://kercyding.github.io/uvup/guide/quick-start) - Get started in minutes
+- [Core Concepts](https://kercyding.github.io/uvup/guide/core-concepts) - Design philosophy
+- [Commands](https://kercyding.github.io/uvup/commands/) - All commands with examples
 - [Use Cases](https://kercyding.github.io/uvup/use-cases/) - Real-world workflows
-- [Core Concepts](https://kercyding.github.io/uvup/core-concepts.html) - Design philosophy
 
 ## IDE Integration
 
