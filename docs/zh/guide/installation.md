@@ -45,6 +45,24 @@ Invoke-RestMethod https://raw.githubusercontent.com/KercyDing/uvup/main/scripts/
 uvup --version
 ```
 
+## 配置
+
+### 自定义环境存储位置
+
+默认情况下，`uvup` 将环境存储在 `~/.uvup` (Linux/macOS) 或 `%USERPROFILE%\.uvup` (Windows) 中。你可以通过设置 `UVUP_HOME` 环境变量来自定义此位置。
+
+**Bash/Zsh:**
+```bash
+export UVUP_HOME="/path/to/your/envs"
+```
+
+**PowerShell:**
+```powershell
+[System.Environment]::SetEnvironmentVariable("UVUP_HOME", "D:\MyPyEnvs", "User")
+```
+
+**注意：** 设置此变量后，你可能需要重启终端或重新运行 `uvup init` 以便让 Shell 集成脚本生效。
+
 ## 从源代码构建
 
 用于开发或自定义构建:

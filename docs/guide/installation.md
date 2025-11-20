@@ -45,6 +45,24 @@ Check that uvup is installed correctly:
 uvup --version
 ```
 
+## Configuration
+
+### Customizing Environment Location
+
+By default, `uvup` stores environments in `~/.uvup` (Linux/macOS) or `%USERPROFILE%\.uvup` (Windows). You can customize this location by setting the `UVUP_HOME` environment variable.
+
+**Bash/Zsh:**
+```bash
+export UVUP_HOME="/path/to/your/envs"
+```
+
+**PowerShell:**
+```powershell
+[System.Environment]::SetEnvironmentVariable("UVUP_HOME", "D:\MyPyEnvs", "User")
+```
+
+**Note:** After setting this variable, you may need to restart your terminal or re-run `uvup init` for the changes to take effect in shell integration scripts.
+
 ## Build from Source
 
 For development or custom builds:
