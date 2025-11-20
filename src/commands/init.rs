@@ -228,7 +228,7 @@ fn get_powershell_profile() -> Result<PathBuf> {
     }
 }
 
-/// Check if PowerShell Core (pwsh) is installed
+/// Check if `PowerShell` Core (pwsh) is installed
 #[cfg(target_os = "windows")]
 fn is_pwsh_installed() -> bool {
     std::process::Command::new("pwsh")

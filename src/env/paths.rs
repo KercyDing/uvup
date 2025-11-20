@@ -1,4 +1,5 @@
 use crate::error::{Result, UvupError};
+use std::env;
 use std::path::PathBuf;
 
 pub(crate) fn get_home_dir() -> Result<PathBuf> {
@@ -7,6 +8,9 @@ pub(crate) fn get_home_dir() -> Result<PathBuf> {
 }
 
 pub(crate) fn get_envs_dir() -> Result<PathBuf> {
+    if let Ok(uvup_home) = env::var("UVUP_HOME") {
+        return Ok(PathBuf::from(uvup_home));
+    }
     Ok(get_home_dir()?.join(".uvup"))
 }
 

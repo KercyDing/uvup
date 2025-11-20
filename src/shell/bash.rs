@@ -7,7 +7,8 @@ uvup() {
             return 1
         fi
 
-        local env_path="$HOME/.uvup/$2/.venv"
+        local root="${UVUP_HOME:-$HOME/.uvup}"
+        local env_path="$root/$2/.venv"
         local activate_script=""
 
         # Check for Windows (Git Bash) or Unix paths

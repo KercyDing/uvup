@@ -7,7 +7,11 @@ function uvup
             return 1
         end
 
-        set -l env_path "$HOME/.uvup/$argv[2]/.venv"
+        set -l root "$UVUP_HOME"
+        if test -z "$root"
+            set root "$HOME/.uvup"
+        end
+        set -l env_path "$root/$argv[2]/.venv"
         set -l activate_script "$env_path/bin/activate.fish"
 
         if not test -f "$activate_script"

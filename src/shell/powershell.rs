@@ -12,7 +12,8 @@ function uvup {
             return
         }
 
-        $envPath = "$env:USERPROFILE\.uvup\$($args[1])\.venv"
+        $root = if ($env:UVUP_HOME) { $env:UVUP_HOME } else { "$env:USERPROFILE\.uvup" }
+        $envPath = "$root\$($args[1])\.venv"
         $activateScript = "$envPath\Scripts\Activate.ps1"
 
         if (-not (Test-Path $activateScript)) {
