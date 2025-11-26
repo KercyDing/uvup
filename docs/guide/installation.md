@@ -116,6 +116,16 @@ The update command will:
 
 **Note:** Restart your terminal after updating to use the new version.
 
+## VSCode Integration
+
+For VSCode users, install the official extension for automatic environment discovery:
+
+```bash
+code --install-extension uvup.uvup-vscode
+```
+
+Or search "uvup" in the VSCode Extensions marketplace. The extension automatically discovers all uvup environments with zero configuration.
+
 ## Next Steps
 
 Continue to [Quick Start](./quick-start) to start using uvup!

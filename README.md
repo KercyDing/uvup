@@ -97,7 +97,7 @@ uvup tree
 
 ## Documentation
 
-📖 **[Full Documentation](https://kercyding.github.io/uvup/)** - Complete user guide
+📖 **[Website](https://kercyding.github.io/uvup/)** - Complete user guide powered by VitePress
 
 - [Installation](https://kercyding.github.io/uvup/guide/installation) - Detailed setup instructions
 - [Quick Start](https://kercyding.github.io/uvup/guide/quick-start) - Get started in minutes
@@ -107,12 +107,7 @@ uvup tree
 
 ## IDE Integration
 
-**VSCode** - Add to your `settings.json`:
-```json
-{
-  "python.venvPath": "~/.uvup"
-}
-```
+**VSCode** - Search "uvup" in the Extensions marketplace for automatic environment discovery. See [VSCode Integration](https://kercyding.github.io/uvup/guide/installation#vscode-integration) for details.
 
 ## License
 

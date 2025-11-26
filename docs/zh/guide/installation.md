@@ -116,6 +116,16 @@ uvup update --check
 
 **注意:** 更新后重新启动终端以使用新版本。
 
+## VSCode 集成
+
+对于 VSCode 用户，可以安装官方扩展来自动发现环境：
+
+```bash
+code --install-extension uvup.uvup-vscode
+```
+
+或在 VSCode 扩展市场搜索 "uvup"。该扩展可以零配置自动发现所有 uvup 环境。
+
 ## 下一步
 
 继续阅读[快速入门](./quick-start.md)开始使用 uvup!
